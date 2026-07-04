@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="MainImage/profile.jpg">
@@ -14,6 +15,7 @@
             flex-direction: column;
             padding: 2rem 16rem;
             color: black;
+            background-color: white;
         }
 
         title {
@@ -24,17 +26,21 @@
         #include {
             padding: 2rem 1.5rem;
             display: flex;
+
             #profile {
                 width: 80px;
                 height: 80px;
             }
+
             .name {
                 font-weight: bolder;
             }
+
             #description {
                 margin: 0;
                 padding: 0rem 1.5rem;
             }
+
             .end {
                 font-weight: bolder;
                 text-align: center;
@@ -42,8 +48,12 @@
         }
     </style>
 </head>
+
 <body>
+    <div id="config"><button id="toggleBtn">backgroundColor</button></div>
+
     <title>Y_z00Blog</title>
+
     <div id="include">
         <img id="profile" src="MainImage/profile.jpg" loading="lazy" alt="profile">
         <dl id="description">
@@ -80,5 +90,25 @@
     <div id="project">
         <title>项目</title>
     </div>
+
+    <script>
+        const btn = document.getElementById('toggleBtn');
+        const body = document.body;
+
+        let isDark = false;
+
+        btn.addEventListener('click', function () {
+            if (isDark) {
+                body.style.backgroundColor = '#ffffff';
+                body.style.color = '#000000';
+                isDark = !isDark;
+            } else {
+                body.style.backgroundColor = '#000000';
+                body.style.color = "#ffffff";
+                isDark = !isDark;
+            }
+        });
+    </script>
 </body>
+
 </html>
