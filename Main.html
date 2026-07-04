@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="MainImage/profile.jpg">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Y_z00Blog</title>
     <style>
         body {
@@ -13,7 +13,7 @@
             align-items: center;
             display: flex;
             flex-direction: column;
-            padding: 2rem 16rem;
+            padding: 2rem clamp(1rem, 16vw, 16rem);
             color: black;
             background-color: white;
         }
@@ -24,12 +24,12 @@
         }
 
         #include {
-            padding: 2rem 1.5rem;
+            padding: 2rem 0.5rem;
             display: flex;
 
             #profile {
-                width: 80px;
-                height: 80px;
+                width: 8vw;
+                height: 8vw;
             }
 
             .name {
@@ -38,7 +38,7 @@
 
             #description {
                 margin: 0;
-                padding: 0rem 1.5rem;
+                padding: 0rem 0.5rem;
             }
 
             .end {
