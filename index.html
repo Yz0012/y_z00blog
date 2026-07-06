@@ -7,15 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Y_z00Blog</title>
     <style>
-        body {
-            line-height: 1.6;
-            min-height: 100vh;
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem clamp(1rem, 16vw, 16rem);
-            color: black;
-            background-color: white;
+        @media (prefers-color-scheme: dark) {
+            body {
+                line-height: 1.6;
+                min-height: 100vh;
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                padding: 2rem clamp(1rem, 16vw, 16rem);
+                color: white;
+                background-color: black;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            body {
+                line-height: 1.6;
+                min-height: 100vh;
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                padding: 2rem clamp(1rem, 16vw, 16rem);
+                color: black;
+                background-color: white;
+            }
         }
 
         title {
@@ -54,7 +69,17 @@
 
     <title>Y_z00Blog</title>
 
-    <div id="include">
+    <div id="article">
+        <title>文章</title>
+    </div>
+
+    <div id="project">
+        <title>项目</title>
+    </div>
+   
+        <title>关于Y_z00</title>
+    
+       <div id="include">
         <img id="profile" src="MainImage/profile.jpg" loading="lazy" alt="profile">
         <dl id="description">
             <dt class="name">Y_z00</dt>
@@ -83,29 +108,21 @@
         </dl>
     </div>
 
-    <div id="article">
-        <title>文章</title>
-    </div>
-
-    <div id="project">
-        <title>项目</title>
-    </div>
-
     <script>
         const btn = document.getElementById('toggleBtn');
         const body = document.body;
 
-        let isDark = false;
+        let a = false;
 
         btn.addEventListener('click', function () {
-            if (isDark) {
+            if (a) {
                 body.style.backgroundColor = '#ffffff';
                 body.style.color = '#000000';
-                isDark = !isDark;
+                a = !a;
             } else {
                 body.style.backgroundColor = '#000000';
                 body.style.color = "#ffffff";
-                isDark = !isDark;
+                a = !a;
             }
         });
     </script>
