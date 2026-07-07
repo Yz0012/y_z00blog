@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import cheerio from 'cheerio';
+const fs = require('fs');
+const path = require('path');
+const cheerio = require('cheerio');
 
 const articleDir = path.join(process.cwd(), 'Article');
 const indexPath = path.join(process.cwd(), 'index.html');
