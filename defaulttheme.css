@@ -1,4 +1,35 @@
-@media (prefers-color-scheme: dark) {
+
+@media only screen and (max-width: 767px) {
+    @media (prefers-color-scheme: dark) {
+    body {
+        line-height: 1.6;
+        min-height: 100vh;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem clamp(0.5rem, 1vw, 4rem);
+        color: white;
+        background-color: black;
+    }
+}
+
+    @media (prefers-color-scheme: light) {
+    body {
+        line-height: 1.6;
+        min-height: 100vh;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem clamp(0.5rem, 1vw, 4rem);
+        color: black;
+        background-color: white;
+    }
+}
+}
+
+
+@media only screen and (min-width: 768px) {
+    @media (prefers-color-scheme: dark) {
     body {
         line-height: 1.6;
         min-height: 100vh;
@@ -11,7 +42,7 @@
     }
 }
 
-@media (prefers-color-scheme: light) {
+    @media (prefers-color-scheme: light) {
     body {
         line-height: 1.6;
         min-height: 100vh;
@@ -22,4 +53,5 @@
         color: black;
         background-color: white;
     }
+}
 }
