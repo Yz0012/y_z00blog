@@ -17,7 +17,7 @@ linkHtml += '</ul>';
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
 const $ = cheerio.load(indexHtml);
 
-const articleEl = $('#article');
+const articleEl = $('#articlelink');
 if (articleEl.length === 0) {
   console.error('💔 找不到id为article的元素');
   process.exit(1);
