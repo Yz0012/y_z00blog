@@ -1,11 +1,15 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: UpdateArticleLink
+name: UpdateArticle
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+    paths:
+      - 'Markdown/*.md'
+  workflow_dispatch: 
+
 jobs:
   build:
 
@@ -26,7 +30,12 @@ jobs:
         node-version: '22'
         # cache: 'npm'
 
-    - run: npm install cheerio
+    - name: install dependencies
+      run: npm install cheerio
+      run: npm install marked
+
+    - name: convert markdown to html
+      run: node convert.js
 
     - name: Run update script
       run: node alingener.js
@@ -35,6 +44,6 @@ jobs:
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add index.html
-        git diff --staged --quiet || git commit -m "Auto-update article links"
+        git add .
+        git diff --staged --quiet || git commit -m "Auto-update convert md & article links"
         git push
