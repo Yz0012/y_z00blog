@@ -7,12 +7,9 @@ const indexPath = path.join(process.cwd(), 'index.html');
 
 const files = fs.readdirSync(articleDir).filter(f => f.endsWith('.html'));
 
-let linkHtml = '<ul>\n';
 files.forEach(file => {
-
-  linkHtml += `  <li><a href="./Article/${file}">${file}</a></li>\n`;
+  linkHtml += `<a href="./Article/${file}">${file}</a>\n`;
 });
-linkHtml += '</ul>';
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
 const $ = cheerio.load(indexHtml);
