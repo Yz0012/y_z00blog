@@ -7,6 +7,7 @@ const indexPath = path.join(process.cwd(), 'index.html');
 
 const files = fs.readdirSync(articleDir).filter(f => f.endsWith('.html'));
 
+let linkHtml = '';
 files.forEach(file => {
   linkHtml += `<a href="./Article/${file}">${file}</a>\n`;
 });
@@ -16,7 +17,7 @@ const $ = cheerio.load(indexHtml);
 
 const articleEl = $('#articlelink');
 if (articleEl.length === 0) {
-  console.error('💔 找不到id为article的元素');
+  console.error('💔 找不到id为articlelink的元素');
   process.exit(1);
 }
 articleEl.empty().append(linkHtml);
