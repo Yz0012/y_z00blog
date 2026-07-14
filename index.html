@@ -1,11 +1,13 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
     <meta charset="UTF-8">
     <link rel="icon" href="MainImage/profile.jpg">
     <link rel="stylesheet" href="defaulttheme.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Y_z00Blog</title>
     <style>
-
         title {
             display: block;
             font-size: clamp(2rem, 2.5vh, 2.5rem);
@@ -50,18 +52,20 @@
 
     <div id="article">
         <title>文章</title>
-        <div id="articlelink"><ul>
-  <li><a href="./Article/hellomyblog.html">hellomyblog.html</a></li>
-</ul></div>
+        <div id="articlelink">
+            <ul>
+                <li><a href="./Article/hellomyblog.html">hellomyblog.html</a></li>
+            </ul>
+        </div>
     </div>
 
     <div id="project">
         <title>项目</title>
     </div>
-   
-        <title>关于Y_z00</title>
-    
-       <div id="include">
+
+    <title>关于Y_z00</title>
+
+    <div id="include">
         <img id="profile" src="MainImage/profile.jpg" loading="lazy" alt="profile">
         <dl id="description">
             <dt class="name">Y_z00</dt>
@@ -89,25 +93,7 @@
             <dt class="end">在此非常感谢你阅读我的介绍</dt>
         </dl>
     </div>
+</body>
+<script src="./defaultscript.js"></script>
 
-    <script>
-        const btn = document.getElementById('toggleBtn');
-        const body = document.body;
-
-        let a = false;
-
-        btn.addEventListener('click', function () {
-            if (a) {
-                body.style.backgroundColor = '#ffffff';
-                body.style.color = '#000000';
-                a = !a;
-            } else {
-                body.style.backgroundColor = '#000000';
-                body.style.color = "#ffffff";
-                a = !a;
-            }
-        });
-    </script>
-
-
-</body></html>
+</html>

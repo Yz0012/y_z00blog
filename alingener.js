@@ -7,9 +7,21 @@ const indexPath = path.join(process.cwd(), 'index.html');
 
 const files = fs.readdirSync(articleDir).filter(f => f.endsWith('.html'));
 
+const fileData = files.map(file => {
+  const filePath = path.join(articleDir, file);
+  const stats = fs.statSync(filePath);
+  return {
+    name: file,
+    mtime: stats.mtime
+  };
+});
+
+fileData.sort((a, b) => b.mtime - a.mtime);
+
 let linkHtml = '';
-files.forEach(file => {
-  linkHtml += `<a href="./Article/${file}">${file}</a>\n`;
+fileData.forEach(({ name, mtime }) => {
+  const dateStr = mtime.toLocaleString('zh-CN', { hour12: false });
+  linkHtml += `<a href="./Article/${name}">${name}</a> <span style="color:#999;">（${dateStr}）</span>\n`;
 });
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
