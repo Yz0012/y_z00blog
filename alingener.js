@@ -20,7 +20,7 @@ fileData.sort((a, b) => b.mtime - a.mtime);
 
 let linkHtml = '';
 fileData.forEach(({ name, mtime }) => {
-  linkHtml += `<a href="./Article/${name}">${name}</a> <span style="color:#999;">（${mtime}）</span>\n`;
+  linkHtml += `<a href="./Article/${name}">${name}</a> <span class="articletime">[${mtime}]</span><br>`;
 });
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
