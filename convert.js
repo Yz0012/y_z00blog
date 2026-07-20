@@ -21,7 +21,8 @@ const TEMPLATE = `<!DOCTYPE html>
 </head>
 
 <body>
-</body>
+<article>
+</article></body>
 <script src="../defaultscript.js"></script>
 
 </html>`;
@@ -41,7 +42,7 @@ files.forEach(file => {
 
     const bodyContent = marked(mdContent);
 
-    let finalHtml = TEMPLATE.replace('</body>', bodyContent + '</body>');
+    let finalHtml = TEMPLATE.replace('</article></body>', bodyContent + '</article></body>');
 
     const title = path.basename(file, '.md');
     finalHtml = finalHtml.replace('<title></title>', `<title>${title}</title>`);
