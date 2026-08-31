@@ -13,7 +13,7 @@ const TEMPLATE = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <link rel="icon" href="../MainImage/profile.jpg">
-    <link rel="stylesheet" href="/defaulttheme.css">
+    <link rel="stylesheet" href="./defaulttheme.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title></title>
 </head>
@@ -22,7 +22,7 @@ const TEMPLATE = `<!DOCTYPE html>
 <a href="" id="belonging"></a>
 <article>
 </article></body>
-<script src="/defaultscript.js"></script>
+<script src="./defaultscript.js"></script>
 
 </html>`;
 const files = fs.readdirSync(sourceDir).filter(f => f.endsWith('.md'));
@@ -88,7 +88,7 @@ files.forEach(file => {
 
     let linkHtml = '';
     fileData.forEach(({ name, mtime }) => {
-        linkHtml += `<a href="./Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
+        linkHtml += `<a href="/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
     });
 
     articleEl.empty().append(linkHtml);
