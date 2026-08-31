@@ -1,16 +1,15 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: UpdateArticle
 
 on:
   push:
     branches: [ main ]
     paths:
-      - 'Markdown/*.md'
-  workflow_dispatch: 
+      - 'SubMarkdown/*.md'
 
 jobs:
+  convert:
+    uses: ./.github/workflows/convert.yml  
+
   build:
 
     runs-on: ubuntu-latest
@@ -34,10 +33,7 @@ jobs:
       run: npm install marked cheerio
 
     - name: convert markdown to html
-      run: node convert.js
-
-    - name: Run update script
-      run: node alingener.js
+      run: node subconvert.js
 
     - name: Commit changes
       run: |
