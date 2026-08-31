@@ -31,6 +31,9 @@ jobs:
         node-version: '22'
         # cache: 'npm'
 
+    - name: install gray-matter
+      run: npm install gray-matter
+
     - name: install dependencies
       run: npm install marked cheerio
 
