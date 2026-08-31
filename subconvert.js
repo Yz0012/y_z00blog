@@ -45,8 +45,6 @@ files.forEach(file => {
         return;
     }
 
-    outputDir = path.join(outputDir, outputPath);
-
     let parentPath = readParentHtmlPath(matterObject);
 
     if (!parentPath) {
@@ -55,6 +53,7 @@ files.forEach(file => {
     }
 
     parentPath = path.join(outputDir, parentPath);
+    outputDir = path.join(outputDir, outputPath);
 
     if (fs.existsSync(parentPath)) {
         console.log('💥 错误：路径父Html不存在');
