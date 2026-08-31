@@ -28,7 +28,7 @@ const TEMPLATE = `<!DOCTYPE html>
 const files = fs.readdirSync(sourceDir).filter(f => f.endsWith('.md'));
 
 if (files.length === 0) {
-    console.log('没有 .md 文件需要转换。');
+    console.log('没有子 .md 文件需要转换。');
     process.exit(0);
 }
 
