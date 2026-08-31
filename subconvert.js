@@ -71,6 +71,7 @@ files.forEach(file => {
     if (articleEl.length === 0) {
         const bodyEl = parentHtml('body');
         bodyEl.append('<div id="article"></div>');
+        articleEl = parentHtml('#articlelink');
     }
 
     const fileData = files.map(file => {
