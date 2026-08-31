@@ -45,7 +45,7 @@ files.forEach(file => {
         return;
     }
 
-    const parentPath = readParentHtPath(matterObject);
+    const parentPath = readParentHtmlPath(matterObject);
 
     if (!parentPath) {
         console.log('💥 错误：读取父Html路径元数据时出错');
