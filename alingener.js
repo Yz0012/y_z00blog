@@ -12,15 +12,12 @@ const fileData = files.map(file => {
   const stats = fs.statSync(filePath);
   return {
     name: file,
-    mtime: stats.mtime
   };
 });
 
-fileData.sort((a, b) => b.mtime - a.mtime);
-
 let linkHtml = '';
-fileData.forEach(({ name, mtime }) => {
-  linkHtml += `<a href="./Article/${name}">${name}</a> <span class="articletime">[${mtime}]</span><br>`;
+fileData.forEach(({ name }) => {
+  linkHtml += `<a href="./Article/${name}">${name}</a>`;
 });
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');

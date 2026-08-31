@@ -45,6 +45,8 @@ files.forEach(file => {
         return;
     }
 
+    outputDir = path.join(outputDir, outputPath);
+
     let parentPath = readParentHtmlPath(matterObject);
 
     if (!parentPath) {
@@ -56,19 +58,21 @@ files.forEach(file => {
 
     if (fs.existsSync(parentPath)) {
         console.log('💥 错误：路径父Html不存在');
+        console.log(parentPath);
         return;
     }
 
     const readParentHtml = fs.readFileSync(parentPath, 'utf-8');
     const parentHtml = cheerio.load(readParentHtml);
-    const articleEl = $('#articlelink');
+    const articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
         const bodyEl = $('body');
         bodyEl.append('<div id="article"></div>');
     }
 
-    const fileData = readParentHtml.map(file => {
-        const stats = fs.statSync(parentPath);
+    const fileData = files.map(file => {
+        const filePath = path.join(outputDir, file);
+        const stats = fs.statSync(filePath);
         return {
             name: file,
             mtime: stats.mtime
@@ -89,8 +93,6 @@ files.forEach(file => {
     const parentHtmlBasename = path.basename(parentPath);
 
     console.log(`✅ ${parentHtmlBasename}添加新的链接`);
-
-    outputDir = path.join(outputDir, outputPath);
 
     const bodyContent = marked(mdContent);
 
