@@ -87,7 +87,6 @@ files.forEach(file => {
     fileData.sort((a, b) => b.mtime - a.mtime);
 
     let linkHtml = '';
-    const htmlFileName = file.replace(/\.md$/, '.html');
     fileData.forEach(({ name, mtime }) => {
         linkHtml += `<a href="./Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
     });
