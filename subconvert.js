@@ -74,7 +74,7 @@ files.forEach(file => {
     }
 
     const fileData = files.map(file => {
-        const filePath = path.join(outputDir, file);
+        const filePath = path.join(sourceDir, file);
         const stats = fs.statSync(filePath);
         return {
             name: file,
