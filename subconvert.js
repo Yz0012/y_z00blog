@@ -114,7 +114,7 @@ files.forEach(file => {
 
 function readOutputPath(md) {
     if (md.data.outputDir) {
-        const outputPath = path.join(outputDir, md.data.outputDir);
+        const outputPath = md.data.outputDir;
         return outputPath;
     } else {
         return false;
@@ -124,6 +124,7 @@ function readOutputPath(md) {
 function readParentHtmlPath(md) {
     if (md.data.parentPath) {
         const parentPath = md.data.parentPath;
+        return parentPath;
     } else {
         return false;
     }
