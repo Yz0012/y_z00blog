@@ -82,7 +82,7 @@ files.forEach(file => {
         linkHtml += `<a href="./Article/${name}">${name}</a> <span class="articletime">[${mtime}]</span><br>`;
     });
 
-    articleEl.empty.append(linkHtml);
+    articleEl.empty().append(linkHtml);
 
     fs.writeFileSync(parentPath, $.html(), 'utf8');
 

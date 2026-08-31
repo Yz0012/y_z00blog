@@ -31,7 +31,7 @@ if (articleEl.length === 0) {
   console.error('💔 找不到id为articlelink的元素');
   process.exit(1);
 }
-articleEl.empty.append(linkHtml);
+articleEl.empty().append(linkHtml);
 
 fs.writeFileSync(indexPath, $.html(), 'utf8');
 console.log('✅ index.html添加新的链接');
