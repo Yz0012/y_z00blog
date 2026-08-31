@@ -67,7 +67,7 @@ files.forEach(file => {
 
     const readParentHtml = fs.readFileSync(parentPath, 'utf-8');
     const parentHtml = cheerio.load(readParentHtml);
-    const articleEl = parentHtml('#articlelink');
+    let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
         const bodyEl = parentHtml('body');
         bodyEl.append('<div id="article"></div>');
