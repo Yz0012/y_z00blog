@@ -26,7 +26,7 @@ const $ = cheerio.load(indexHtml);
 const articleEl = $('#articlelink');
 if (articleEl.length === 0) {
   console.error('💔 找不到id为articlelink的元素');
-  process.exit(1);
+  return;
 }
 articleEl.empty().append(linkHtml);
 

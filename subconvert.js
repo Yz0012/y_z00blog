@@ -70,7 +70,7 @@ files.forEach(file => {
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
         const bodyEl = parentHtml('body');
-        bodyEl.append('<div id="article"></div>');
+        bodyEl.append('<div id="articlelink"></div>');
         articleEl = parentHtml('#articlelink');
         console.log('添加article元素');
     }
