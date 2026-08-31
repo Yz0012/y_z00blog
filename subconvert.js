@@ -5,7 +5,7 @@ const matter = require('gray-matter');
 const cheerio = require('cheerio');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
-const outputDir = path.join(process.cwd(), 'Article');
+let outputDir = path.join(process.cwd(), 'Article');
 
 const TEMPLATE = `<!DOCTYPE html>
 <html lang="zh">
@@ -45,7 +45,7 @@ files.forEach(file => {
         return;
     }
 
-    const parentPath = readParentHtmlPath(matterObject);
+    let parentPath = readParentHtmlPath(matterObject);
 
     if (!parentPath) {
         console.log('💥 错误：读取父Html路径元数据时出错');
