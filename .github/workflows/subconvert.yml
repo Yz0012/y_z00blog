@@ -12,7 +12,7 @@ jobs:
       contents: write
     concurrency:
       group: ${{ github.workflow_ref }}-${{ github.ref }}
-      queue: true
+      queue: max
     uses: ./.github/workflows/convert.yml  
 
   build:
