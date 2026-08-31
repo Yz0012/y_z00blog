@@ -61,12 +61,10 @@ files.forEach(file => {
 
     const readParentHtml = fs.readFileSync(parentPath, 'utf-8');
     const parentHtml = cheerio.load(readParentHtml);
-    const bodyEl = $('body');
-    bodyEl.append('<div id="article"></div>');
     const articleEl = $('#articlelink');
     if (articleEl.length === 0) {
-        console.error('💔 找不到id为articlelink的元素');
-        process.exit(1);
+        const bodyEl = $('body');
+        bodyEl.append('<div id="article"></div>');
     }
 
     const fileData = readParentHtml.map(file => {
@@ -84,7 +82,7 @@ files.forEach(file => {
         linkHtml += `<a href="./Article/${name}">${name}</a> <span class="articletime">[${mtime}]</span><br>`;
     });
 
-    articleEl.append(linkHtml);
+    articleEl.empty.append(linkHtml);
 
     fs.writeFileSync(parentPath, $.html(), 'utf8');
 

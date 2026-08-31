@@ -4,11 +4,12 @@
 name: UpdateArticle
 
 on:
+
+  workflow_call:
   push:
     branches: [ main ]
     paths:
       - 'Markdown/*.md'
-    workflow_call:
 
 jobs:
   build:
