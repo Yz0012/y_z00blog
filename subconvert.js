@@ -72,6 +72,7 @@ files.forEach(file => {
         const bodyEl = parentHtml('body');
         bodyEl.append('<div id="article"></div>');
         articleEl = parentHtml('#articlelink');
+        console.log('添加article元素');
     }
 
     const fileData = files.map(file => {
@@ -91,6 +92,7 @@ files.forEach(file => {
     });
 
     articleEl.empty().append(linkHtml);
+    console.log(`linkHtml:${linkHtml}`);
 
     fs.writeFileSync(parentPath, parentHtml.html(), 'utf8');
 
