@@ -69,7 +69,7 @@ files.forEach(file => {
     const parentHtml = cheerio.load(readParentHtml);
     const articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
-        const bodyEl = $('body');
+        const bodyEl = parentHtml('body');
         bodyEl.append('<div id="article"></div>');
     }
 
