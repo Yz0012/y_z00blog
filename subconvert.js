@@ -91,7 +91,7 @@ files.forEach(file => {
 
     articleEl.empty().append(linkHtml);
 
-    fs.writeFileSync(parentPath, $.html(), 'utf8');
+    fs.writeFileSync(parentPath, parentHtml.html(), 'utf8');
 
     const parentHtmlBasename = path.basename(parentPath);
 
