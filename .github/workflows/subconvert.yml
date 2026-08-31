@@ -8,6 +8,8 @@ on:
 
 jobs:
   convert:
+    permissions:
+      contents: write
     uses: ./.github/workflows/convert.yml  
 
   build:
