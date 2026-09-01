@@ -11,8 +11,7 @@ let outputDir = path.join(process.cwd(), 'Article');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
-const TEMPLATE = `
----
+const TEMPLATE = `---
 ---
 
 <!DOCTYPE html>
@@ -44,7 +43,7 @@ if (files.length === 0) {
 files.forEach(file => {
     const mdPath = path.join(sourceDir, file);
     const htmlFileName = file.replace(/\.md$/, '.html');
-
+    console.log(`读取到${htmlFileName}`);
     const mdContent = fs.readFileSync(mdPath, 'utf8');
 
     const matterObject = matter(mdContent);
@@ -54,26 +53,26 @@ files.forEach(file => {
         return;
     }
 
-    let parentPath = readParentHtmlPath(matterObject);
+    const parentPath = readParentHtmlPath(matterObject);
 
     if (!parentPath) {
         console.log('💥 错误：读取父Html路径元数据时出错');
         return;
     }
 
-    parentPath = path.join(outputDir, parentPath);
+    const parentHtmlPath = path.join(outputDir, parentPath);
 
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    if (!fs.existsSync(parentPath)) {
+    if (!fs.existsSync(parentHtmlPath)) {
         console.log('💥 错误：路径父Html不存在');
-        console.log(parentPath);
+        console.log(parentHtmlPath);
         return;
     }
 
-    const readParentHtml = fs.readFileSync(parentPath, 'utf-8');
+    const readParentHtml = fs.readFileSync(parentHtmlPath, 'utf-8');
     const parentHtml = cheerio.load(readParentHtml);
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
@@ -104,8 +103,8 @@ files.forEach(file => {
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
-    fs.writeFileSync(parentPath, parentHtml.html(), 'utf8');
-    const parentHtmlBasename = path.basename(parentPath);
+    fs.writeFileSync(parentHtmlPath, parentHtml.html(), 'utf8');
+    const parentHtmlBasename = path.basename(parentHtmlPath);
 
     console.log(`✅ ${parentHtmlBasename}添加新的链接`);
 
