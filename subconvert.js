@@ -3,17 +3,22 @@ const path = require('path');
 const { marked } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
+const markedKatex = require('marked-katex-extension');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 let outputDir = path.join(process.cwd(), 'Article');
+
+const katexOptions = { throwOnError: false, nonStandard: true };
+marked.use(markedKatex(katexOptions));
 
 const TEMPLATE = `<!DOCTYPE html>
 <html lang="zh">
 
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="../MainImage/profile.jpg">
-    <link rel="stylesheet" href="./defaulttheme.css">
+    <link rel="icon" href="/MainImage/profile.jpg">
+    <link rel="stylesheet" href="/defaulttheme.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title></title>
 </head>
@@ -22,7 +27,7 @@ const TEMPLATE = `<!DOCTYPE html>
 <a href="" id="belonging"></a>
 <article>
 </article></body>
-<script src="./defaultscript.js"></script>
+<script src="/defaultscript.js"></script>
 
 </html>`;
 const files = fs.readdirSync(sourceDir).filter(f => f.endsWith('.md'));

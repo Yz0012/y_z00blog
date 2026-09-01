@@ -40,6 +40,9 @@ jobs:
     - name: install cheerio
       run: npm install marked cheerio
 
+    - name: install marked-katex
+      run: npm install marked-katex-extension
+
     - name: convert submarkdown to html
       run: node subconvert.js
 

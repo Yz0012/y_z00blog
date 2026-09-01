@@ -33,6 +33,7 @@ jobs:
 
     - name: install dependencies
       run: npm install marked cheerio
+      run: npm install marked-katex-extension
 
     - name: convert markdown to html
       run: node convert.js

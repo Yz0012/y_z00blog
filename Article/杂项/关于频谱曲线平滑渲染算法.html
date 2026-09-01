@@ -3,15 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="../MainImage/profile.jpg">
+    <link rel="icon" href="/MainImage/profile.jpg">
     <link rel="stylesheet" href="/defaulttheme.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
+
+    <!-- The loading of KaTeX is deferred to speed up page rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.js" integrity="sha384-TTF8eEsEKInX2meLzP5V1z/npGYIElXYGksx93f0qBZHu6IL3PdzVB8objytx+TR" crossorigin="anonymous"></script>
+
+    <!-- To automatically render math in text elements, include the auto-render extension: -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous"
+        onload="renderMathInElement(document.body);"></script>
     <title>关于频谱曲线平滑渲染算法</title>
 </head>
 
 <body>
-<a href="./home/runner/work/y_z00blog/y_z00blog/Article/杂项.html" id="belonging>从属于杂项.html</a>
 <article>
+    <a></a>
 <h1>关于频谱曲线平滑渲染算法</h1>
 <h2>前提</h2>
 <p>由于推入环形缓冲区进行FFT样本的大小相同，因此渲染时FFT返回的结果需要一定的时间，但ui线程异步调用，即使以每60hz的频率调用绘制方法，里面也会有许多相同的FFT结果被绘制，造成卡顿的视觉效果，所以这里尝试在FFT返回的上一个结果和当前结果中插入更多不同的数据，让频谱图呈现一种更平滑的效果，避免使用更高的采样率来加快填充样本空间的速率</p>
@@ -38,7 +46,8 @@ p.lineTo(currentNum, y);
 gapSmoothedScopeData[i] = (scopeData[i] - scopeDataStorage[i]) * 0.50f;
 scopeDataStorage[i] = scopeData[i] - gapSmoothedScopeData[i];</code>
 </pre><p>*还需要注意的一点是在行1中，<code>scopeDataStorage[i - 1]</code>的位置不应该写<code>scopeData[i - 1] - gapSmoothedScopeData[i - 1]</code>，因为数据更新的过程中<code>scopeData[i - 1]</code>也会被更新，这会导致渲染时出现奇怪的频闪</p>
-<p>*还有一点，因为这个算法在绘制的方法中，因此平滑移动的快慢也会取决于你所选择的帧率</p>
+<p>*还有一点，因为这个算法在绘制的方法中，因此平滑移动的快慢也会取决于你所选择的帧率 $ x = x ^ 4 $</p>
+<p>$$x = x ^ 2$$</p>
 </article></body>
 <script src="/defaultscript.js"></script>
 
