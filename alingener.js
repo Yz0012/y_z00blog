@@ -17,7 +17,7 @@ const fileData = files.map(file => {
 
 let linkHtml = '';
 fileData.forEach(({ name }) => {
-  linkHtml += `<a href="{{ sitebaseurl }}/Article/${name}">${name}</a>`;
+  linkHtml += `<a href="{{ site.baseurl }}/Article/${name}">${name}</a>`;
 });
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
