@@ -13,7 +13,11 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
 }
 
-const TEMPLATE = `<!DOCTYPE html>
+const TEMPLATE = `
+---
+---
+
+<!DOCTYPE html>
 <html lang="zh">
 
 <head>

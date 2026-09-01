@@ -11,7 +11,11 @@ let outputDir = path.join(process.cwd(), 'Article');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
-const TEMPLATE = `<!DOCTYPE html>
+const TEMPLATE = `
+---
+---
+
+<!DOCTYPE html>
 <html lang="zh">
 
 <head>
@@ -58,7 +62,6 @@ files.forEach(file => {
     }
 
     parentPath = path.join(outputDir, parentPath);
-    outputDir = path.join(outputDir, outputPath);
 
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -93,8 +96,10 @@ files.forEach(file => {
 
     let linkHtml = '';
     fileData.forEach(({ name, mtime }) => {
-        linkHtml += `<a href="/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
+        linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
     });
+
+    outputDir = path.join(outputDir, outputPath);
 
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
@@ -111,12 +116,12 @@ files.forEach(file => {
     const title = path.basename(file, '.md');
     finalHtml = finalHtml.replace('<title></title>', `<title>${title}</title>`);
 
-    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="/{{ site.baseurl }}${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
+    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}/${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
 
     const htmlOutputPath = path.join(outputDir, htmlFileName);
 
     fs.writeFileSync(htmlOutputPath, finalHtml, 'utf8');
-    console.log(`✅ 已转换: ${file} → Article/${htmlFileName}`);
+    console.log(`✅ 已转换: ${file} → ${htmlFileName}`);
 
     fs.unlinkSync(mdPath);
     console.log(`🗑️ 已删除: ${file}`);
