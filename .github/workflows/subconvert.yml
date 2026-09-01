@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write
     concurrency:
-      group: ${{ github.workflow_ref }}-${{ github.ref }}
+      group: ${{ github.workflow }}-${{ github.ref }}
       queue: max
     uses: ./.github/workflows/convert.yml  
 
@@ -20,6 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      queue: max
 
     strategy:
       matrix:
@@ -48,9 +51,9 @@ jobs:
 
     - name: Commit changes
       run: |
-        git pull
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add .
-        git diff --staged --quiet || git commit -m "Auto-update convert md & article links"
+        git diff --staged --quiet || git commit -m "auto-update convert md & article links"
+        git pull
         git push
