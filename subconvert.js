@@ -115,7 +115,7 @@ files.forEach(file => {
     const title = path.basename(file, '.md');
     finalHtml = finalHtml.replace('<title></title>', `<title>${title}</title>`);
 
-    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}/${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
+    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
 
     const htmlOutputPath = path.join(outputDir, htmlFileName);
 
