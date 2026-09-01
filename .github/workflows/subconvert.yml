@@ -37,6 +37,9 @@ jobs:
         node-version: '22'
         # cache: 'npm'
 
+    - name: pull
+      run: git pull
+
     - name: install gray-matter
       run: npm install gray-matter
 
@@ -51,7 +54,6 @@ jobs:
 
     - name: Commit changes
       run: |
-        git pull --rebase origin main
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add .

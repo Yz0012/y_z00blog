@@ -31,18 +31,20 @@ jobs:
         node-version: '22'
         # cache: 'npm'
 
+    - name: pull
+      run: git pull
+
     - name: install dependencies
       run: npm install marked cheerio marked-katex-extension
 
     - name: convert markdown to html
       run: node convert.js
 
-    - name: Run update script
+    - name: run update script
       run: node alingener.js
 
-    - name: Commit changes
+    - name: commit changes
       run: |
-        git pull --rebase origin main
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add .
