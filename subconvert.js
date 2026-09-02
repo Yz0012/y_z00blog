@@ -11,7 +11,10 @@ const outputDir = path.join(process.cwd(), 'Article');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
-const TEMPLATE = `<!DOCTYPE html>
+const TEMPLATE = `---
+---
+
+<!DOCTYPE html>
 <html lang="zh">
 
 <head>
@@ -85,6 +88,9 @@ files.forEach(file => {
     }
 
     const readParentHtml = fs.readFileSync(parentHtmlPath, 'utf-8');
+
+    removeFrontMatter(readParentHtml);
+
     const parentHtml = cheerio.load(readParentHtml);
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
@@ -101,10 +107,15 @@ files.forEach(file => {
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
-    const frontMatterWtHtml = `---
-    ---
-    ${parentHtml.html()}
-    `;
+    let frontMatterWtHtml = ``;
+
+    if (!hasFrontMatter) {
+        let frontMatterWtHtml = `---
+        ---
+        ${parentHtml.html()}
+        `;
+    }
+
     fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
 
@@ -148,4 +159,15 @@ function readParentHtmlPath(md) {
 
 function addLinktoParentHtml(md) {
     const html = cheerio.load(md);
+}
+
+function hasFrontMatter(str) {
+    return /^---\s*\n[\s\S]*?\n---\s*\n/.test(str);
+}
+
+function removeFrontMatter(str) {
+    if (match) {
+        return str.slice(match[0].length);
+    }
+    return str;
 }
