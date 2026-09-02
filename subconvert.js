@@ -37,6 +37,23 @@ if (files.length === 0) {
     process.exit(0);
 }
 
+
+const fileData = files.map(file => {
+    const filePath = path.join(sourceDir, file);
+    const stats = fs.statSync(filePath);
+    return {
+        name: file,
+        mtime: stats.mtime
+    };
+});
+
+fileData.sort((a, b) => b.mtime - a.mtime);
+
+var inkHtml = '';
+fileData.forEach(({ name, mtime }) => {
+    linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
+});
+
 files.forEach(file => {
     const mdPath = path.join(sourceDir, file);
     const htmlFileName = file.replace(/\.md$/, '.html');
@@ -79,22 +96,6 @@ files.forEach(file => {
         articleEl = parentHtml('#articlelink');
         console.log('添加article元素');
     }
-
-    const fileData = files.map(file => {
-        const filePath = path.join(sourceDir, file);
-        const stats = fs.statSync(filePath);
-        return {
-            name: file,
-            mtime: stats.mtime
-        };
-    });
-
-    fileData.sort((a, b) => b.mtime - a.mtime);
-
-    let linkHtml = '';
-    fileData.forEach(({ name, mtime }) => {
-        linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
-    });
 
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
