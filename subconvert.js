@@ -6,7 +6,7 @@ const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
-let outputDir = path.join(process.cwd(), 'Article');
+const outputDir = path.join(process.cwd(), 'Article');
 
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
@@ -61,6 +61,7 @@ files.forEach(file => {
     }
 
     const parentHtmlPath = path.join(outputDir, parentPath);
+    const outputHtmlDir = path.join(outputDir, outputPath);
 
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -98,8 +99,6 @@ files.forEach(file => {
         linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
     });
 
-    outputDir = path.join(outputDir, outputPath);
-
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
@@ -117,7 +116,10 @@ files.forEach(file => {
 
     finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
 
-    const htmlOutputPath = path.join(outputDir, htmlFileName);
+    const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
+
+    console.log(outputHtmlDir);
+    console.log(htmlFileName);
 
     fs.writeFileSync(htmlOutputPath, finalHtml, 'utf8');
     console.log(`✅ 已转换: ${file} → ${htmlFileName}`);
