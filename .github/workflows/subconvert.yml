@@ -7,16 +7,7 @@ on:
       - 'SubMarkdown/*.md'
 
 jobs:
-  convert:
-    permissions:
-      contents: write
-    concurrency:
-      group: convert-${{ github.ref }}
-      cancel-in-progress: true
-    uses: ./.github/workflows/convert.yml  
-
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: write
