@@ -107,10 +107,10 @@ files.forEach(file => {
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
-    let frontMatterWtHtml = ``;
+    let frontMatterWtHtml = parentHtml.html();
 
-    if (!hasFrontMatter) {
-        let frontMatterWtHtml = `---
+    if (!hasFrontMatter(frontMatterWtHtml)) {
+        frontMatterWtHtml = `---
         ---
         ${parentHtml.html()}
         `;
