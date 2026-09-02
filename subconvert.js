@@ -18,12 +18,34 @@ function escapeHtml(text) {
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-marked.setOptions({
-  highlight: function(code, lang) {
-    console.log('test');
-    
-  }
-});
+const renderer = new Renderer();
+
+renderer.code = function (code, lang) {
+    console.log(`🔍 渲染代码块，语言: "${lang}"`);
+
+    const isValid = lang && Prism.languages[lang];
+    let highlighted;
+
+    if (isValid) {
+        try {
+            highlighted = Prism.highlight(code, Prism.languages[lang], lang);
+        } catch (e) {
+            console.warn(`高亮失败 (${lang}):`, e);
+            highlighted = escapeHtml(code);
+        }
+    } else {
+        highlighted = escapeHtml(code);
+    }
+    const lines = highlighted.split('\n');
+    const wrappedLines = lines
+        .map(line => `<span class="line">${line || ' '}</span>`)
+        .join('\n');
+
+    const langClass = isValid ? lang : 'text';
+    return `<pre class="line-numbers language-${langClass}"><code>${wrappedLines}</code></pre>`;
+};
+
+marked.use({ renderer });
 
 const TEMPLATE = `---
 ---
@@ -96,7 +118,7 @@ files.forEach(file => {
     let nonFrontMatterHtml = removeFrontMatter(readParentHtml);
 
     console.log(nonFrontMatterHtml);
-    
+
 
     const parentHtml = cheerio.load(nonFrontMatterHtml);
     let articleEl = parentHtml('#articlelink');
@@ -121,7 +143,7 @@ ${parentHtml.html()}`;
     }
 
     console.log(frontMatterWtHtml);
-    
+
 
     fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
