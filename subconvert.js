@@ -16,35 +16,9 @@ marked.use(markedKatex(katexOptions));
 
 const renderer = new Renderer();
 
-renderer.code = function(code, lang) {
-    const codeStr = String(code);
-    const effectiveLang = lang && Prism.languages[lang] ? lang : null;
-    let highlighted;
-
-    if (effectiveLang) {
-        try {
-            highlighted = Prism.highlight(codeStr, Prism.languages[effectiveLang], effectiveLang);
-        } catch (e) {
-            console.warn(`Prism highlight failed for "${lang}":`, e);
-            highlighted = codeStr;
-        }
-    } else {
-        highlighted = codeStr;
-    }
-
-    if (typeof highlighted !== 'string') {
-        console.warn(`Prism.highlight returned non-string (${typeof highlighted}), falling back to raw code.`);
-        highlighted = codeStr;
-    }
-
-    const lines = highlighted.split('\n');
-    const wrappedLines = lines
-        .map(line => `<span class="line">${line || ' '}</span>`)
-        .join('\n');
-
-    const langClass = effectiveLang || 'text';
-    return `<pre class="line-numbers language-${langClass}"><code>${wrappedLines}</code></pre>`;
-  };
+renderer.code = function (code, lang) {
+    return Prism.highlight(code, Prism.languages[lang], lang);
+};
 
 marked.use({ renderer });
 
@@ -135,8 +109,12 @@ files.forEach(file => {
     articleEl.append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
-    let frontMatterWtHtml = matter.stringify(parentHtml.html(), frontMatterHtml.data);
-    
+    let frontMatterWtHtml = parentHtml.html();
+
+    frontMatterWtHtml = `---
+---
+${parentHtml.html()}`;
+
     console.log(frontMatterWtHtml);
 
 
