@@ -20,29 +20,8 @@ function escapeHtml(text) {
 
 marked.setOptions({
   highlight: function(code, lang) {
-    const isValidLang = lang && Prism.languages[lang];
-    let highlightedCode;
-
-    if (isValidLang) {
-      try {
-        highlightedCode = Prism.highlight(code, Prism.languages[lang], lang);
-      } catch (e) {
-        console.warn(`Prism highlight failed for "${lang}":`, e);
-        highlightedCode = escapeHtml(code);
-      }
-    } else {
-        highlightedCode = escapeHtml(code);
-    }
-
-    const lines = highlightedCode.split('\n');
-    const wrappedLines = lines
-        .map(line => `<span class="line">${line || ' '}</span>`)
-        .join('\n');
+    console.log('test');
     
-    console.log('nonLang');
-    
-    const langClass = isValidLang ? lang : 'text';
-    return `<pre class="line-numbers language-${langClass}"><code>${wrappedLines}</code></pre>`;
   }
 });
 
@@ -116,6 +95,9 @@ files.forEach(file => {
 
     let nonFrontMatterHtml = removeFrontMatter(readParentHtml);
 
+    console.log(nonFrontMatterHtml);
+    
+
     const parentHtml = cheerio.load(nonFrontMatterHtml);
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
@@ -137,6 +119,9 @@ files.forEach(file => {
 ---
 ${parentHtml.html()}`;
     }
+
+    console.log(frontMatterWtHtml);
+    
 
     fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
