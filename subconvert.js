@@ -40,18 +40,6 @@ if (files.length === 0) {
     process.exit(0);
 }
 
-
-const fileData = files.map(file => {
-    const filePath = path.join(sourceDir, file);
-    const stats = fs.statSync(filePath);
-    return {
-        name: file,
-        mtime: stats.mtime
-    };
-});
-
-fileData.sort((a, b) => b.mtime - a.mtime);
-
 var linkHtml = '';
 
 files.forEach(file => {
@@ -59,6 +47,7 @@ files.forEach(file => {
     const htmlFileName = file.replace(/\.md$/, '.html');
     console.log(`读取到${htmlFileName}`);
     const mdContent = fs.readFileSync(mdPath, 'utf8');
+    const stats = fs.statSync(mdPath);
 
     const matterObject = matter(mdContent);
     const outputPath = readOutputPath(matterObject);
@@ -100,11 +89,9 @@ files.forEach(file => {
         console.log('添加article元素');
     }
 
-    ({ name, mtime }) => {
-        linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
-    };
+    linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${stats.mtime}]</span><br>`;
 
-    articleEl.empty().append(linkHtml);
+    articleEl.append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
     let frontMatterWtHtml = parentHtml.html();
@@ -114,8 +101,6 @@ files.forEach(file => {
 ---
 ${parentHtml.html()}`;
     }
-
-    console.log(frontMatterWtHtml);    
 
     fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
