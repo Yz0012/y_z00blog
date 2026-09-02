@@ -89,9 +89,9 @@ files.forEach(file => {
 
     const readParentHtml = fs.readFileSync(parentHtmlPath, 'utf-8');
 
-    removeFrontMatter(readParentHtml);
+    let nonFrontMatterHtml = removeFrontMatter(readParentHtml);
 
-    const parentHtml = cheerio.load(readParentHtml);
+    const parentHtml = cheerio.load(nonFrontMatterHtml);
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
         const bodyEl = parentHtml('body');
@@ -115,6 +115,8 @@ files.forEach(file => {
         ${parentHtml.html()}
         `;
     }
+
+    console.log(frontMatterWtHtml);    
 
     fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
