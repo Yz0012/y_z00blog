@@ -62,6 +62,9 @@ files.forEach(file => {
 
     const parentHtmlPath = path.join(outputDir, parentPath);
     const outputHtmlDir = path.join(outputDir, outputPath);
+    console.log(outputDir);
+    console.log('-----');
+    console.log(outputPath);
 
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -119,7 +122,6 @@ files.forEach(file => {
     const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
 
     console.log(outputHtmlDir);
-    console.log(htmlFileName);
 
     fs.writeFileSync(htmlOutputPath, finalHtml, 'utf8');
     console.log(`✅ 已转换: ${file} → ${htmlFileName}`);
