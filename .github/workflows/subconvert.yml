@@ -49,6 +49,9 @@ jobs:
     - name: install marked-katex
       run: npm install marked-katex-extension
 
+    - name: install prismjs
+      run: npm install prismjs
+
     - name: convert submarkdown to html
       run: node subconvert.js
 

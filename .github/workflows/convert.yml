@@ -35,7 +35,7 @@ jobs:
       run: git pull
 
     - name: install dependencies
-      run: npm install marked cheerio marked-katex-extension
+      run: npm install marked cheerio marked-katex-extension prismjs
 
     - name: convert markdown to html
       run: node convert.js

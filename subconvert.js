@@ -4,12 +4,36 @@ const { marked } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
+const Prism = require('prismjs');
+const loadLanguages = require('prismjs/components/');
+loadLanguages(['cpp']);
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Article');
 
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
+
+marked.setOptions({
+  highlight: function(code, lang) {
+    if (lang && Prism.languages[lang]) {
+      try {
+        const highlighted = Prism.highlight(code, Prism.languages[lang], lang);
+        
+        const lines = highlighted.split('\n');
+        const wrappedLines = lines
+          .map(line => `<span class="line">${line || ' '}</span>`)
+          .join('\n');
+        
+        return `<pre class="line-numbers"><code>${wrappedLines}</code></pre>`;
+      } catch (e) {
+        console.warn(`Prism highlight failed for "${lang}":`, e);
+        return code;
+      }
+    }
+    return code;
+  }
+});
 
 const TEMPLATE = `---
 ---
@@ -21,6 +45,7 @@ const TEMPLATE = `---
     <meta charset="UTF-8">
     <link rel="icon" href="{{ site.baseurl }}/MainImage/profile.jpg">
     <link rel="stylesheet" href="{{ site.baseurl }}/defaulttheme.css">
+    <link href="https:///prismjs@v1.x/themes/prism.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title></title>
