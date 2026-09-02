@@ -30,7 +30,7 @@ fileData.forEach(({ name }) => {
   articleEl.append(linkHtml);
 });
 
-fs.writeFileSync(indexPath, $.html, 'utf8');
+fs.writeFileSync(indexPath, $.html(), 'utf8');
 const parentHtmlBasename = path.basename(indexPath);
 
 console.log(`✅ ${parentHtmlBasename}添加新的链接`);
