@@ -62,12 +62,9 @@ files.forEach(file => {
 
     const parentHtmlPath = path.join(outputDir, parentPath);
     const outputHtmlDir = path.join(outputDir, outputPath);
-    console.log(outputDir);
-    console.log('-----');
-    console.log(outputPath);
 
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+    if (!fs.existsSync(outputHtmlDir)) {
+        fs.mkdirSync(outputHtmlDir, { recursive: true });
     }
 
     if (!fs.existsSync(parentHtmlPath)) {
@@ -120,8 +117,6 @@ files.forEach(file => {
     finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
 
     const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
-
-    console.log(outputHtmlDir);
 
     fs.writeFileSync(htmlOutputPath, finalHtml, 'utf8');
     console.log(`✅ 已转换: ${file} → ${htmlFileName}`);
