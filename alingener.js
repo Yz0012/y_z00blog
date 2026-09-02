@@ -15,28 +15,36 @@ const fileData = files.map(file => {
   };
 });
 
+const indexHtml = fs.readFileSync(indexPath, 'utf8');
+
+let nonFrontMatterHtml = removeFrontMatter(indexHtml);
+
+const $ = cheerio.load(nonFrontMatterHtml);
+
 let linkHtml = '';
 fileData.forEach(({ name }) => {
-  linkHtml += `<a href="{{ site.baseurl }}/Post/${name}">${name}</a>`;
+  const articleEl = $('#articlelink');
+  if (articleEl.length === 0) {
+    console.error('💔 找不到id为articlelink的元素');
+    return;
+  }
+  linkHtml = `<a href="{{ site.baseurl }}/Post/${name}">${name}</a>`;
+  articleEl.empty().append(linkHtml);
 });
 
-const indexHtml = fs.readFileSync(indexPath, 'utf8');
-const $ = cheerio.load(removeFrontMatter(indexHtml));
-
-const articleEl = $('#articlelink');
-if (articleEl.length === 0) {
-  console.error('💔 找不到id为articlelink的元素');
-  return;
-}
-articleEl.empty().append(linkHtml);
-
 let frontMatterWtHtml = $;
+
+console.log(frontMatterWtHtml);
+
+console.log('-----');
 
 if (!hasFrontMatter(frontMatterWtHtml)) {
   frontMatterWtHtml = `---
 ---
 ${$.html()}`;
 }
+
+console.log(frontMatterWtHtml);
 
 fs.writeFileSync(indexPath, frontMatterWtHtml, 'utf8');
 const parentHtmlBasename = path.basename(indexPath);

@@ -114,7 +114,7 @@ files.forEach(file => {
         console.log('添加article元素');
     }
 
-    linkHtml += `<a href="{{ site.baseurl }}/Post${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${stats.mtime}]</span><br>`;
+    linkHtml = `<a href="{{ site.baseurl }}/Post${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${stats.mtime}]</span><br>`;
 
     articleEl.append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
