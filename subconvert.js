@@ -31,7 +31,8 @@ marked.setOptions({
         highlightedCode = escapeHtml(code);
       }
     } else {
-      highlightedCode = escapeHtml(code);
+        console.log('nonLang');
+        highlightedCode = escapeHtml(code);
     }
 
     const lines = highlightedCode.split('\n');
