@@ -130,7 +130,8 @@ files.forEach(file => {
     console.log(`linkHtml:${linkHtml}`);
 
     let frontMatterWtHtml = parentHtml.html();
-
+    console.log(hasFrontMatter(frontMatterWtHtml));
+    
     if (!hasFrontMatter(frontMatterWtHtml)) {
         frontMatterWtHtml = `---
 ---
@@ -191,7 +192,10 @@ function hasFrontMatter(str) {
 
 function removeFrontMatter(str) {
     const match = str.match(/^(---\s*\n[\s\S]*?\n---\s*\n)/);
+    console.log(match);
+    
     if (match) {
+        console.log('test1');
         return str.slice(match[0].length);
     }
     return str;
