@@ -35,11 +35,11 @@ let frontMatterWtHtml = $;
 if (!hasFrontMatter(frontMatterWtHtml)) {
   frontMatterWtHtml = `---
 ---
-${parentHtml.html()}`;
+${$.html()}`;
 }
 
-fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
-const parentHtmlBasename = path.basename(parentHtmlPath);
+fs.writeFileSync(indexPath, frontMatterWtHtml, 'utf8');
+const parentHtmlBasename = path.basename(indexPath);
 
 console.log(`✅ ${parentHtmlBasename}添加新的链接`);
 
