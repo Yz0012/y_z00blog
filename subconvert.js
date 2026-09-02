@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { marked } = require('marked');
+const { marked, Renderer } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
@@ -21,7 +21,6 @@ function escapeHtml(text) {
 const renderer = new Renderer();
 
 renderer.code = function (code, lang) {
-    console.log(`🔍 渲染代码块，语言: "${lang}"`);
 
     const isValid = lang && Prism.languages[lang];
     let highlighted;
