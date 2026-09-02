@@ -166,6 +166,7 @@ function hasFrontMatter(str) {
 }
 
 function removeFrontMatter(str) {
+    const match = str.match(/^(---\s*\n[\s\S]*?\n---\s*\n)/);
     if (match) {
         return str.slice(match[0].length);
     }
