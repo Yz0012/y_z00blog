@@ -46,7 +46,7 @@ if (files.length === 0) {
 
         const mdContent = fs.readFileSync(mdPath, 'utf8');
 
-        const bodyContent = marked(mdContent);
+        const bodyContent = marked.parse(mdContent);
 
         let finalHtml = TEMPLATE.replace('</article></body>', bodyContent + '</article></body>');
 

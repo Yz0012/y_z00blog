@@ -31,7 +31,6 @@ marked.setOptions({
         highlightedCode = escapeHtml(code);
       }
     } else {
-        console.log('nonLang');
         highlightedCode = escapeHtml(code);
     }
 
@@ -39,7 +38,9 @@ marked.setOptions({
     const wrappedLines = lines
         .map(line => `<span class="line">${line || ' '}</span>`)
         .join('\n');
-
+    
+    console.log('nonLang');
+    
     const langClass = isValidLang ? lang : 'text';
     return `<pre class="line-numbers language-${langClass}"><code>${wrappedLines}</code></pre>`;
   }
@@ -142,7 +143,7 @@ ${parentHtml.html()}`;
 
     console.log(`✅ ${parentHtmlBasename}添加新的链接`);
 
-    const bodyContent = marked(matterObject.content);
+    const bodyContent = marked.parse(matterObject.content);
 
     let finalHtml = TEMPLATE.replace('</article></body>', bodyContent + '</article></body>');
 
