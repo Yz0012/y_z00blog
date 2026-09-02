@@ -9,7 +9,7 @@ const loadLanguages = require('prismjs/components/');
 loadLanguages(['cpp']);
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
-const outputDir = path.join(process.cwd(), 'Article');
+const outputDir = path.join(process.cwd(), 'Post');
 
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
@@ -114,7 +114,7 @@ files.forEach(file => {
         console.log('添加article元素');
     }
 
-    linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${stats.mtime}]</span><br>`;
+    linkHtml += `<a href="{{ site.baseurl }}/Post${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${stats.mtime}]</span><br>`;
 
     articleEl.append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
@@ -139,7 +139,7 @@ ${parentHtml.html()}`;
     const title = path.basename(file, '.md');
     finalHtml = finalHtml.replace('<title></title>', `<title>${title}</title>`);
 
-    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}/Article${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
+    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}/Post${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
 
     const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
 

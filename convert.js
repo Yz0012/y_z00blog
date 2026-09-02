@@ -4,7 +4,7 @@ const { marked } = require('marked');
 const markedKatex = require('marked-katex-extension');
 
 const sourceDir = path.join(process.cwd(), 'Markdown');
-const outputDir = path.join(process.cwd(), 'Article');
+const outputDir = path.join(process.cwd(), 'Post');
 
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
@@ -54,7 +54,7 @@ if (files.length === 0) {
         finalHtml = finalHtml.replace('<title></title>', `<title>${title}</title>`);
 
         fs.writeFileSync(htmlPath, finalHtml, 'utf8');
-        console.log(`✅ 已转换: ${file} → Article/${htmlFileName}`);
+        console.log(`✅ 已转换: ${file} → Post/${htmlFileName}`);
 
         fs.unlinkSync(mdPath);
         console.log(`🗑️  已删除: ${file}`);

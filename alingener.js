@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
 
-const articleDir = path.join(process.cwd(), 'Article');
+const articleDir = path.join(process.cwd(), 'Post');
 const indexPath = path.join(process.cwd(), 'index.html');
 
 const files = fs.readdirSync(articleDir).filter(f => f.endsWith('.html'));
@@ -17,7 +17,7 @@ const fileData = files.map(file => {
 
 let linkHtml = '';
 fileData.forEach(({ name }) => {
-  linkHtml += `<a href="{{ site.baseurl }}/Article/${name}">${name}</a>`;
+  linkHtml += `<a href="{{ site.baseurl }}/Post/${name}">${name}</a>`;
 });
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
@@ -30,7 +30,7 @@ if (articleEl.length === 0) {
 }
 articleEl.empty().append(linkHtml);
 
-let frontMatterWtHtml = parentHtml.html();
+let frontMatterWtHtml = $;
 
 if (!hasFrontMatter(frontMatterWtHtml)) {
   frontMatterWtHtml = `---
