@@ -13,6 +13,8 @@ on:
 
 jobs:
   build:
+    concurrency:
+      group: convert-${{ github.ref }}
 
     runs-on: ubuntu-latest
     permissions:

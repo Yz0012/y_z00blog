@@ -26,7 +26,7 @@ fileData.forEach(({ name }) => {
     console.error('💔 找不到id为articlelink的元素');
     return;
   }
-  linkHtml = `<a href="{{ site.baseurl }}/Post/${name}">${name}</a>`;
+  linkHtml = `<a href="./Post/${name}">${name}</a>`;
   articleEl.append(linkHtml);
 });
 
