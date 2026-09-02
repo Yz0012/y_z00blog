@@ -49,7 +49,7 @@ const fileData = files.map(file => {
 
 fileData.sort((a, b) => b.mtime - a.mtime);
 
-var inkHtml = '';
+var linkHtml = '';
 fileData.forEach(({ name, mtime }) => {
     linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
 });
