@@ -100,9 +100,9 @@ files.forEach(file => {
         console.log('添加article元素');
     }
 
-    fileData.forEach(({ name, mtime }) => {
+    ({ name, mtime }) => {
         linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
-    });
+    };
 
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
@@ -111,9 +111,8 @@ files.forEach(file => {
 
     if (!hasFrontMatter(frontMatterWtHtml)) {
         frontMatterWtHtml = `---
-        ---
-        ${parentHtml.html()}
-        `;
+---
+${parentHtml.html()}`;
     }
 
     console.log(frontMatterWtHtml);    
@@ -130,7 +129,7 @@ files.forEach(file => {
     const title = path.basename(file, '.md');
     finalHtml = finalHtml.replace('<title></title>', `<title>${title}</title>`);
 
-    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
+    finalHtml = finalHtml.replace('<a href="" id="belonging"></a>', `<a href="{{ site.baseurl }}/Article${parentPath}" id="belonging">从属于${parentHtmlBasename}</a>`);
 
     const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
 
