@@ -11,10 +11,7 @@ const outputDir = path.join(process.cwd(), 'Article');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
-const TEMPLATE = `---
----
-
-<!DOCTYPE html>
+const TEMPLATE = `<!DOCTYPE html>
 <html lang="zh">
 
 <head>
@@ -74,10 +71,7 @@ files.forEach(file => {
     }
 
     const readParentHtml = fs.readFileSync(parentHtmlPath, 'utf-8');
-    console.log(readParentHtml);
-    console.log('-----');
     const parentHtml = cheerio.load(readParentHtml);
-    console.log(parentHtml.html());
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
         const bodyEl = parentHtml('body');
@@ -105,7 +99,11 @@ files.forEach(file => {
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
-    fs.writeFileSync(parentHtmlPath, parentHtml.html(), 'utf8');
+    const frontMatterWtHtml = `---
+    ---
+    ${parentHtml.html()}
+    `;
+    fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
 
     console.log(`✅ ${parentHtmlBasename}添加新的链接`);
