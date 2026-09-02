@@ -17,9 +17,7 @@ const fileData = files.map(file => {
 
 const indexHtml = fs.readFileSync(indexPath, 'utf8');
 
-let nonFrontMatterHtml = removeFrontMatter(indexHtml);
-
-const $ = cheerio.load(nonFrontMatterHtml);
+const $ = cheerio.load(indexHtml);
 
 let linkHtml = '';
 fileData.forEach(({ name }) => {
@@ -29,36 +27,10 @@ fileData.forEach(({ name }) => {
     return;
   }
   linkHtml = `<a href="{{ site.baseurl }}/Post/${name}">${name}</a>`;
-  articleEl.empty().append(linkHtml);
+  articleEl.append(linkHtml);
 });
 
-let frontMatterWtHtml = $;
-
-console.log(frontMatterWtHtml);
-
-console.log('-----');
-
-if (!hasFrontMatter(frontMatterWtHtml)) {
-  frontMatterWtHtml = `---
----
-${$.html()}`;
-}
-
-console.log(frontMatterWtHtml);
-
-fs.writeFileSync(indexPath, frontMatterWtHtml, 'utf8');
+fs.writeFileSync(indexPath, $.html, 'utf8');
 const parentHtmlBasename = path.basename(indexPath);
 
 console.log(`✅ ${parentHtmlBasename}添加新的链接`);
-
-function hasFrontMatter(str) {
-  return /^---\s*\n[\s\S]*?\n---\s*\n/.test(str);
-}
-
-function removeFrontMatter(str) {
-  const match = str.match(/^(---\s*\n[\s\S]*?\n---\s*\n)/);
-  if (match) {
-    return str.slice(match[0].length);
-  }
-  return str;
-}
