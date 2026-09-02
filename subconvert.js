@@ -6,7 +6,7 @@ const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
 const Prism = require('prismjs');
 const loadLanguages = require('prismjs/components/');
-loadLanguages(['cpp']);
+loadLanguages();
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Post');
@@ -17,18 +17,24 @@ marked.use(markedKatex(katexOptions));
 const renderer = new Renderer();
 
 renderer.code = function(code, lang) {
+    const codeStr = String(code);
     const effectiveLang = lang && Prism.languages[lang] ? lang : null;
     let highlighted;
 
     if (effectiveLang) {
-      try {
-        highlighted = Prism.highlight(code, Prism.languages[effectiveLang], effectiveLang);
-      } catch (e) {
-        console.warn(`Prism highlight failed for "${lang}":`, e);
-        highlighted = code;
-      }
+        try {
+            highlighted = Prism.highlight(codeStr, Prism.languages[effectiveLang], effectiveLang);
+        } catch (e) {
+            console.warn(`Prism highlight failed for "${lang}":`, e);
+            highlighted = codeStr;
+        }
     } else {
-      highlighted = code;
+        highlighted = codeStr;
+    }
+
+    if (typeof highlighted !== 'string') {
+        console.warn(`Prism.highlight returned non-string (${typeof highlighted}), falling back to raw code.`);
+        highlighted = codeStr;
     }
 
     const lines = highlighted.split('\n');
@@ -110,12 +116,12 @@ files.forEach(file => {
 
     const readParentHtml = fs.readFileSync(parentHtmlPath, 'utf-8');
 
-    let nonFrontMatterHtml = removeFrontMatter(readParentHtml);
+    let frontMatterHtml = matter(readParentHtml);
 
-    console.log(nonFrontMatterHtml);
+    console.log(frontMatterHtml);
 
 
-    const parentHtml = cheerio.load(nonFrontMatterHtml);
+    const parentHtml = cheerio.load(frontMatterHtml.content);
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
         const bodyEl = parentHtml('body');
@@ -129,15 +135,8 @@ files.forEach(file => {
     articleEl.append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
 
-    let frontMatterWtHtml = parentHtml.html();
-    console.log(hasFrontMatter(frontMatterWtHtml));
+    let frontMatterWtHtml = matter.stringify(parentHtml.html(), frontMatterHtml.data);
     
-    if (!hasFrontMatter(frontMatterWtHtml)) {
-        frontMatterWtHtml = `---
----
-${parentHtml.html()}`;
-    }
-
     console.log(frontMatterWtHtml);
 
 
@@ -184,19 +183,4 @@ function readParentHtmlPath(md) {
 
 function addLinktoParentHtml(md) {
     const html = cheerio.load(md);
-}
-
-function hasFrontMatter(str) {
-    return /^---\s*\n[\s\S]*?\n---\s*\n/.test(str);
-}
-
-function removeFrontMatter(str) {
-    const match = str.match(/^(---\s*\n[\s\S]*?\n---\s*\n)/);
-    console.log(match);
-    
-    if (match) {
-        console.log('test1');
-        return str.slice(match[0].length);
-    }
-    return str;
 }
