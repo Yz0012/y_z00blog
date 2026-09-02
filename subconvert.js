@@ -50,9 +50,6 @@ const fileData = files.map(file => {
 fileData.sort((a, b) => b.mtime - a.mtime);
 
 var linkHtml = '';
-fileData.forEach(({ name, mtime }) => {
-    linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
-});
 
 files.forEach(file => {
     const mdPath = path.join(sourceDir, file);
@@ -96,6 +93,10 @@ files.forEach(file => {
         articleEl = parentHtml('#articlelink');
         console.log('添加article元素');
     }
+
+    fileData.forEach(({ name, mtime }) => {
+        linkHtml += `<a href="{{ site.baseurl }}/Article${outputPath}/${htmlFileName}">${htmlFileName}</a> <span class="articletime">[${mtime}]</span><br>`;
+    });
 
     articleEl.empty().append(linkHtml);
     console.log(`linkHtml:${linkHtml}`);
