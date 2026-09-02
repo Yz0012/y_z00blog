@@ -14,35 +14,31 @@ const outputDir = path.join(process.cwd(), 'Post');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
-function escapeHtml(text) {
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
 const renderer = new Renderer();
 
-renderer.code = function (code, lang) {
-
-    const isValid = lang && Prism.languages[lang];
+renderer.code = function(code, lang) {
+    const effectiveLang = lang && Prism.languages[lang] ? lang : null;
     let highlighted;
 
-    if (isValid) {
-        try {
-            highlighted = Prism.highlight(code, Prism.languages[lang], lang);
-        } catch (e) {
-            console.warn(`高亮失败 (${lang}):`, e);
-            highlighted = escapeHtml(code);
-        }
+    if (effectiveLang) {
+      try {
+        highlighted = Prism.highlight(code, Prism.languages[effectiveLang], effectiveLang);
+      } catch (e) {
+        console.warn(`Prism highlight failed for "${lang}":`, e);
+        highlighted = code;
+      }
     } else {
-        highlighted = escapeHtml(code);
+      highlighted = code;
     }
+
     const lines = highlighted.split('\n');
     const wrappedLines = lines
         .map(line => `<span class="line">${line || ' '}</span>`)
         .join('\n');
 
-    const langClass = isValid ? lang : 'text';
+    const langClass = effectiveLang || 'text';
     return `<pre class="line-numbers language-${langClass}"><code>${wrappedLines}</code></pre>`;
-};
+  };
 
 marked.use({ renderer });
 
