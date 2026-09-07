@@ -16,7 +16,7 @@ marked.use(markedKatex(katexOptions));
 
 const renderer = new Renderer();
 
-const renderer = {
+renderer = {
     code({ text, lang }) {
         const escapedText = text.replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
