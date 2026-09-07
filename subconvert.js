@@ -14,21 +14,30 @@ const outputDir = path.join(process.cwd(), 'Post');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
+function highlightWithLineNumbers(code, lang = 'plaintext') {
+    const grammar = Prism.languages[lang] || Prism.languages.plaintext;
+
+    let highlightedCode;
+    if (grammar) {
+        highlightedCode = Prism.highlight(code, grammar, lang);
+    } else {
+        highlightedCode = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    const lineCount = code.split('\n').length;
+
+    const rowsSpans = '<span></span>'.repeat(lineCount);
+    const rowsWrapper = `<span aria-hidden="true" class="line-numbers-rows">${rowsSpans}</span>`;
+    return `<pre class="line-numbers language-${lang}"><code class="language-${lang}">${highlightedCode}${rowsWrapper}</code></pre>`;
+}
+
 const renderer = {
     code({ text, lang }) {
-        const escapedText = text.replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-
-        const language = lang || 'plaintext';
-        const languageClass = `language-${language}`;
-
-        return `<pre class="line-numbers">
-              <code class="${languageClass}">
-                ${escapedText}
-              </code>
-            </pre>`;
+        const trimmedCode = text.trimEnd();
+        return highlightWithLineNumbers(trimmedCode, lang);
     }
 };
 
@@ -45,9 +54,7 @@ const TEMPLATE = `---
     <link rel="icon" href="{{ site.baseurl }}/MainImage/profile.jpg">
     <link rel="stylesheet" href="{{ site.baseurl }}/defaulttheme.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
-<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title></title>
