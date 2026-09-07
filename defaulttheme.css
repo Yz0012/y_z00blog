@@ -56,6 +56,18 @@
 }
 }
 
+blockquote {
+    p {
+        border-left: solid, greenyellow;
+        margin-left: 0;
+        padding-left: 40px;
+    }
+}
+
+code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+
 a:link {
     color: cornflowerblue;
 }
