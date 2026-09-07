@@ -58,7 +58,7 @@
 
 blockquote {
     p {
-        border-left: solid, greenyellow;
+        border-left: solid greenyellow;
         margin-left: 0;
         padding-left: 40px;
     }
