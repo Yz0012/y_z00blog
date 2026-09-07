@@ -56,6 +56,14 @@
 }
 }
 
+pre[class*="language-"] {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    word-break: normal;
+    -webkit-overflow-scrolling: touch;
+}
+
 blockquote {
     p {
         border-left: solid greenyellow;
