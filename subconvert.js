@@ -14,9 +14,7 @@ const outputDir = path.join(process.cwd(), 'Post');
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
 
-const renderer = new Renderer();
-
-renderer = {
+const renderer = {
     code({ text, lang }) {
         const escapedText = text.replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
