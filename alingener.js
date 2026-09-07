@@ -27,7 +27,7 @@ fileData.forEach(({ name }) => {
     return;
   }
   linkHtml = `<a href="./Post/${name}">${name}</a>`;
-  articleEl.append(linkHtml);
+  articleEl.empty().append(linkHtml);
 });
 
 fs.writeFileSync(indexPath, $.html(), 'utf8');
