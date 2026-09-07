@@ -55,3 +55,19 @@
     }
 }
 }
+
+a:link {
+    color: cornflowerblue;
+}
+
+a:visited {
+    color: chartreuse;
+}
+
+a:hover {
+    color: blueviolet;
+}
+
+a:active {
+    color: aqua;
+}
