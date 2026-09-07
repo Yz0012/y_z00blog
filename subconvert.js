@@ -16,15 +16,22 @@ marked.use(markedKatex(katexOptions));
 
 const renderer = new Renderer();
 
-renderer.code = function (code, language) {
-    const validLanguage = Prism.languages[language];
-    const langClass = validLanguage ? `language-${language}` : '';
+const renderer = {
+    code({ text, lang }) {
+        const escapedText = text.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
 
-    const highlightedCode = validLanguage
-        ? Prism.highlight(code, validLanguage, language)
-        : code;
+        const language = lang || 'plaintext';
+        const languageClass = `language-${language}`;
 
-    return `<pre class="line-numbers ${langClass}"><code class="${langClass}">${highlightedCode}</code></pre>`;
+        return `<pre class="line-numbers">
+              <code class="${languageClass}">
+                ${escapedText}
+              </code>
+            </pre>`;
+    }
 };
 
 marked.use({ renderer });
