@@ -6,7 +6,7 @@ const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
 const Prism = require('prismjs');
 const loadLanguages = require('prismjs/components/');
-loadLanguages();
+loadLanguages('cpp');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Post');
@@ -16,9 +16,15 @@ marked.use(markedKatex(katexOptions));
 
 const renderer = new Renderer();
 
-renderer.code = function (code, lang) {
-    console.log('this fuc was be called');
-    
+renderer.code = function (code, language) {
+    const validLanguage = Prism.languages[language];
+    const langClass = validLanguage ? `language-${language}` : '';
+
+    const highlightedCode = validLanguage
+        ? Prism.highlight(code, validLanguage, language)
+        : code;
+
+    return `<pre class="line-numbers ${langClass}"><code class="${langClass}">${highlightedCode}</code></pre>`;
 };
 
 marked.use({ renderer });
@@ -33,7 +39,10 @@ const TEMPLATE = `---
     <meta charset="UTF-8">
     <link rel="icon" href="{{ site.baseurl }}/MainImage/profile.jpg">
     <link rel="stylesheet" href="{{ site.baseurl }}/defaulttheme.css">
-    <link href="https:///prismjs@v1.x/themes/prism.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title></title>
