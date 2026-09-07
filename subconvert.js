@@ -17,7 +17,8 @@ marked.use(markedKatex(katexOptions));
 const renderer = new Renderer();
 
 renderer.code = function (code, lang) {
-    return Prism.highlight(code, Prism.languages[lang], lang);
+    console.log('this fuc was be called');
+    
 };
 
 marked.use({ renderer });
@@ -92,9 +93,6 @@ files.forEach(file => {
 
     let frontMatterHtml = matter(readParentHtml);
 
-    console.log(frontMatterHtml);
-
-
     const parentHtml = cheerio.load(frontMatterHtml.content);
     let articleEl = parentHtml('#articlelink');
     if (articleEl.length === 0) {
@@ -114,9 +112,6 @@ files.forEach(file => {
     frontMatterWtHtml = `---
 ---
 ${parentHtml.html()}`;
-
-    console.log(frontMatterWtHtml);
-
 
     fs.writeFileSync(parentHtmlPath, frontMatterWtHtml, 'utf8');
     const parentHtmlBasename = path.basename(parentHtmlPath);
