@@ -29,6 +29,7 @@ const TEMPLATE = `---
 </head>
 
 <body>
+<a href="{{ site.baseurl }}/" id="belonging">主页</a>
 <article>
 </article></body>
 <script src="{{ site.baseurl }}/defaultscript.js"></script>
