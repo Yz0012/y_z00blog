@@ -1,3 +1,21 @@
+::-webkit-scrollbar {
+  width: 20px;
+  height: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0px;
+  border: 6px solid black;
+  box-shadow: 16px 16px 0 greenyellow inset;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  box-shadow: 16px 16px 0 orange inset;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: orange;
+}
 
 @media only screen and (max-width: 767px) {
     @media (prefers-color-scheme: dark) {
@@ -56,11 +74,12 @@
 }
 }
 
+article {
+    display: contents;
+}
+
 pre[class*="language-"] {
-    max-width: 100%;
-    overflow-x: auto;
-    white-space: pre;
-    word-break: normal;
+    max-width: 80%;
     -webkit-overflow-scrolling: touch;
 }
 
