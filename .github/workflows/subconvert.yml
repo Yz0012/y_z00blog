@@ -40,6 +40,9 @@ jobs:
     - name: install marked-katex
       run: npm install marked-katex-extension
 
+    - name: install marked-prism-linenumber
+      run: npm install marked-prism-linenumber
+
     - name: install prismjs
       run: npm install prismjs
 

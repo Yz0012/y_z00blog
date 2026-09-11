@@ -4,44 +4,15 @@ const { marked } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
-const Prism = require('prismjs');
-const loadLanguages = require('prismjs/components/');
-loadLanguages('cpp');
+const {linenumberrender, init} = require('marked-prism-linenumber');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Post');
 
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
-
-function highlightWithLineNumbers(code, lang = 'plaintext') {
-    const grammar = Prism.languages[lang] || Prism.languages.plaintext;
-
-    let highlightedCode;
-    if (grammar) {
-        highlightedCode = Prism.highlight(code, grammar, lang);
-    } else {
-        highlightedCode = code
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-    }
-
-    const lineCount = code.split('\n').length;
-
-    const rowsSpans = '<span></span>'.repeat(lineCount);
-    const rowsWrapper = `<span aria-hidden="true" class="line-numbers-rows">${rowsSpans}</span>`;
-    return `<pre class="line-numbers language-${lang}"><code class="language-${lang}">${highlightedCode}${rowsWrapper}</code></pre>`;
-}
-
-const renderer = {
-    code({ text, lang }) {
-        const trimmedCode = text.trimEnd();
-        return highlightWithLineNumbers(trimmedCode, lang);
-    }
-};
-
-marked.use({ renderer });
+init({languages: ['cpp']});
+marked.use({ linenumberrender });
 
 const TEMPLATE = `---
 ---
