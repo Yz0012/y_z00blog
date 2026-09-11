@@ -5,6 +5,7 @@
     "marked": "^18.0.12",
     "marked-katex-extension": "^5.1.12",
     "marked-prism-linenumber": "^1.0.0",
+    "marked-prismjs-linenumber": "^0.0.1",
     "prismjs": "^1.30.0"
   }
 }
