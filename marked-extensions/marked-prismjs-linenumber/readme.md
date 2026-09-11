@@ -82,6 +82,8 @@ The code block above is rendered as:
 </pre>
 ```
 
+[Effect display](https://yz0012.github.io/y_z00blog/Post/%E6%9D%82%E9%A1%B9/%E8%A1%8C%E5%8F%B7%E7%A4%BA%E4%BE%8B.html)
+
 Each `<span></span>` inside `.line-numbers-rows` becomes one line number via the Prism line-numbers CSS.
 
 ## API

@@ -1,7 +1,7 @@
 {
   "name": "marked-prismjs-linenumber",
-  "version": "0.0.4",
-  "description": "Return HTML with line-number structure",
+  "version": "0.0.5",
+  "description": "Return HTML with prismjs line-number structure",
   "type": "module",
   "main": "./index.cjs",
   "module": "./index.mjs",
