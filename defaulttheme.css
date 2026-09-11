@@ -22,7 +22,6 @@
     body {
         line-height: 1.6;
         min-height: 100vh;
-        align-items: center;
         display: flex;
         flex-direction: column;
         padding: 2rem clamp(0.5rem, 1vw, 4rem);
@@ -35,7 +34,6 @@
     body {
         line-height: 1.6;
         min-height: 100vh;
-        align-items: center;
         display: flex;
         flex-direction: column;
         padding: 2rem clamp(0.5rem, 1vw, 4rem);
