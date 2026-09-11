@@ -1,4 +1,4 @@
-# marked-prism-linenumber
+# marked-prismjs-linenumber
 
 > A [marked](https://marked.js.org/) renderer that highlights Markdown code blocks with [Prism.js](https://prismjs.com/) and renders line numbers — just like the `line-numbers` plugin, but produced straight from the Markdown parser.
 
@@ -8,20 +8,20 @@
 ## Installation
 
 ```bash
-npm install marked-prism-linenumber
+npm install marked-prismjs-linenumber
 ```
 
 Or with pnpm / yarn:
 
 ```bash
-pnpm add marked-prism-linenumber
-yarn add marked-prism-linenumber
+pnpm add marked-prismjs-linenumber
+yarn add marked-prismjs-linenumber
 ```
 
 You also need `marked` and `prismjs`:
 
 ```bash
-npm install marked prismjs marked-prism-linenumber
+npm install marked prismjs marked-prismjs-linenumber
 ```
 
 ## Required styles
@@ -46,7 +46,7 @@ npm install marked prismjs marked-prism-linenumber
 
 ```js
 import { marked } from 'marked';
-import { renderer, init } from 'marked-prism-linenumber';
+import { renderer, init } from 'marked-prismjs-linenumber';
 
 // Optional: preload Prism grammars you need.
 // Anything not loaded falls back to escaped plain text.
@@ -108,7 +108,7 @@ A `marked` renderer object exposing a single `code({ text, lang })` method. Pass
 
 ```js
 import { marked } from 'marked';
-import { renderer } from 'marked-prism-linenumber';
+import { renderer } from 'marked-prismjs-linenumber';
 
 marked.use({ renderer });
 ```
