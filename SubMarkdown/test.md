@@ -35,7 +35,7 @@ tresult PLUGIN_API PlugProcessor::process (Vst::ProcessData&data)
             }
         }
     }
-    // ....
+    // ...
 }
 
 ```

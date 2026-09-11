@@ -4,7 +4,7 @@ const { marked } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
-const {linenumberrender, init} = require('marked-prism-linenumber');
+const {linenumberrender, init} = require('marked-prismjs-linenumber');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Post');
