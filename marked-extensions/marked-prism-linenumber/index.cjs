@@ -1,5 +1,5 @@
 const Prism = require('prismjs');
-const loadLanguages = require('prismjs/components/index.js');
+const loadLanguages = require('prismjs/components/');
 
 function highlightWithLineNumbers(code, lang = 'plaintext') {
     const grammar = Prism.languages[lang] || Prism.languages.plaintext;
