@@ -1,6 +1,6 @@
 {
   "name": "marked-prismjs-linenumber",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Return HTML with line-number structure",
   "type": "module",
   "main": "./index.cjs",
@@ -16,6 +16,10 @@
     "index.mjs",
     "index.cjs"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yz0012/y_z00blog/tree/main/marked-extensions/marked-prismjs-linenumber"
+  },
   "keywords": ["marked", "prismjs", "linenumber"],
   "author": "Y_z00",
   "license": "MIT"

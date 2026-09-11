@@ -2,8 +2,8 @@
 
 > A [marked](https://marked.js.org/) renderer that highlights Markdown code blocks with [Prism.js](https://prismjs.com/) and renders line numbers — just like the `line-numbers` plugin, but produced straight from the Markdown parser.
 
-[![npm version](https://img.shields.io/npm/v/marked-prism-linenumber.svg)](https://www.npmjs.com/package/marked-prism-linenumber)
-[![license](https://img.shields.io/npm/l/marked-prism-linenumber.svg)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/marked-prismjs-linenumber.svg)](https://www.npmjs.com/package/marked-prismjs-linenumber)
+[![license](https://img.shields.io/npm/l/marked-prismjs-linenumber.svg)](./LICENSE)
 
 ## Installation
 
