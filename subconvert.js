@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { marked, Renderer } = require('marked');
+const { marked } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
