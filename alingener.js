@@ -20,15 +20,15 @@ const indexHtml = fs.readFileSync(indexPath, 'utf8');
 const $ = cheerio.load(indexHtml);
 
 let linkHtml = '';
+const articleEl = $('#articlelink');
 fileData.forEach(({ name }) => {
-  const articleEl = $('#articlelink');
   if (articleEl.length === 0) {
     console.error('💔 找不到id为articlelink的元素');
     return;
   }
-  linkHtml = `<a href="./Post/${name}">${name}</a>`;
-  articleEl.empty().append(linkHtml);
+  linkHtml += `<a href="./Post/${name}">${name}</a>`;
 });
+articleEl.empty().append(linkHtml);
 
 fs.writeFileSync(indexPath, $.html(), 'utf8');
 const parentHtmlBasename = path.basename(indexPath);
