@@ -4,18 +4,19 @@ const { marked } = require('marked');
 const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
-const { renderer, init } = require('marked-prismjs-linenumber');
+const linenumber = require('marked-prismjs-linenumber');
 const { gfmHeadingId } = require('marked-gfm-headingid');
+const markedAlert = require('marked-alert');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Post');
 
 const katexOptions = { throwOnError: false, nonStandard: true };
 marked.use(markedKatex(katexOptions));
-init({ languages: ['cpp'] });
-marked.use({ renderer });
+marked.use(linenumber({ languages: ['cpp'] }));
 const gfmOptions = { prefix: 'title-' };
 marked.use(gfmHeadingId(gfmOptions));
+marked.use(markedAlert());
 
 const TEMPLATE = `---
 ---

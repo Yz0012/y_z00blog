@@ -49,6 +49,9 @@ jobs:
     - name: install marked-gfm-heading-id
       run: npm install marked-gfm-heading-id
 
+    - name: install marked-alert
+      run: npm install marked-alert
+
     - name: convert submarkdown to html
       run: node subconvert.js
 

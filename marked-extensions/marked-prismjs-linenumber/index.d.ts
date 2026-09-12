@@ -7,15 +7,13 @@ export interface MarkedCodeArgs {
   lang?: string;
 }
 
-export const renderer: {
-  code(args: MarkedCodeArgs): string;
-};
+export interface MarkedExtension {
+  renderer: {
+    code(args: MarkedCodeArgs): string;
+  };
+}
 
-export function init(options?: PrismJsLineNumberOptions): void;
+declare function linenumber(options?: PrismJsLineNumberOptions): MarkedExtension;
 
-declare const _default: {
-  renderer: typeof renderer;
-  init: typeof init;
-};
-
-export default _default;
+export { linenumber };
+export default linenumber;

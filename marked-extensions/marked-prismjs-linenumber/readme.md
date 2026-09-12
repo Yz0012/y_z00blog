@@ -1,6 +1,6 @@
 # marked-prismjs-linenumber
 
-> A [marked](https://marked.js.org/) renderer that highlights Markdown code blocks with [Prism.js](https://prismjs.com/) and renders line numbers — just like the `line-numbers` plugin, but produced straight from the Markdown parser.
+> A [marked](https://marked.js.org/) extension that highlights Markdown code blocks with [Prism.js](https://prismjs.com/) and renders line numbers — just like the `line-numbers` plugin, but produced straight from the Markdown parser.
 
 [![npm version](https://img.shields.io/npm/v/marked-prismjs-linenumber.svg)](https://www.npmjs.com/package/marked-prismjs-linenumber)
 [![license](https://img.shields.io/npm/l/marked-prismjs-linenumber.svg)](./LICENSE)
@@ -42,18 +42,19 @@ npm install marked prismjs marked-prismjs-linenumber
 
 ## Usage
 
-### 1. Register the renderer
+### 1. Register the extension
 
 ```js
 import { marked } from 'marked';
-import { renderer, init } from 'marked-prismjs-linenumber';
+import linenumber from 'marked-prismjs-linenumber';
 
-// Optional: preload Prism grammars you need.
-// Anything not loaded falls back to escaped plain text.
-init({ languages: ['javascript', 'typescript', 'css', 'bash', 'json'] });
-
-// Hook the renderer into marked.
-marked.use({ renderer });
+marked.use(
+  linenumber({
+    // Optional: preload Prism grammars you need.
+    // Anything not loaded falls back to escaped plain text.
+    languages: ['javascript', 'typescript', 'css', 'bash', 'json'],
+  })
+);
 
 const markdown = `
 # Example
@@ -82,38 +83,30 @@ The code block above is rendered as:
 </pre>
 ```
 
-[Effect display](https://yz0012.github.io/y_z00blog/Post/%E6%9D%82%E9%A1%B9/%E8%A1%8C%E5%8F%B7%E7%A4%BA%E4%BE%8B.html)
-
 Each `<span></span>` inside `.line-numbers-rows` becomes one line number via the Prism line-numbers CSS.
 
 ## API
 
-### `init(options?)`
+### `linenumber(options?)`
 
-Loads Prism language grammars before rendering. Call it once at startup.
+Creates a `marked` extension. Pass it directly to `marked.use(...)`.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `languages` | `string[]` | — | Language names or aliases to load via `prismjs/components/index.js`. |
 
 ```js
-init({ languages: ['javascript', 'python', 'go'] });
+import { marked } from 'marked';
+import linenumber from 'marked-prismjs-linenumber';
+
+marked.use(linenumber({ languages: ['javascript', 'python', 'go'] }));
 ```
 
 If a language is not loaded, or an unknown `lang` is used in a fenced code block, the renderer escapes the raw code and outputs it as plain text.
 
-### `renderer`
-
-A `marked` renderer object exposing a single `code({ text, lang })` method. Pass it to `marked.use({ renderer })`.
-
-```js
-import { marked } from 'marked';
-import { renderer } from 'marked-prismjs-linenumber';
-
-marked.use({ renderer });
-```
+The extension overrides the `code({ text, lang })` renderer:
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| `code` | `string` | — | The source code to highlight. |
+| `text` | `string` | — | The source code to highlight. |
 | `lang` | `string` | `'plaintext'` | Prism language name or alias. |

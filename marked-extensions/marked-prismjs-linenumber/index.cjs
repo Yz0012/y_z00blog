@@ -22,7 +22,7 @@ function highlightWithLineNumbers(code, lang = 'plaintext') {
     const lineCount = code.split('\n').length;
     const rowsSpans = '<span></span>'.repeat(lineCount);
     const rowsWrapper = `<span aria-hidden="true" class="line-numbers-rows">${rowsSpans}</span>`;
-    return `<pre class="line-numbers language-${lang}"><code class="language-${lang}">${highlightedCode}${rowsWrapper}</code></pre>`;
+    return `<pre class="line-numbers language-${lang}"><code class="language-${lang}">${highlightedCode}</code>${rowsWrapper}</pre>`;
 }
 
 const renderer = {
