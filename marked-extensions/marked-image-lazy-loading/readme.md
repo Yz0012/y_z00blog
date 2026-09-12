@@ -1,11 +1,11 @@
-# marked-lazy-image
+# marked-image-lazy-loading
 
 Add `loading="lazy"` to all images rendered by [marked](https://github.com/markedjs/marked).
 
 ## Install
 
 ```bash
-npm i marked-lazy-image
+npm i marked-image-lazy-loading
 ```
 
 > Requires `marked >= 4` (peer dependency).
@@ -16,7 +16,7 @@ npm i marked-lazy-image
 
 ```ts
 import { marked } from 'marked';
-import { lazyImage } from 'marked-lazy-image';
+import { lazyImage } from 'marked-image-lazy-loading';
 
 marked.use(lazyImage());
 
@@ -28,7 +28,7 @@ marked.parse('![alt](a.png)');
 
 ```js
 const { marked } = require('marked');
-const lazyImage = require('marked-lazy-image');
+const lazyImage = require('marked-image-lazy-loading');
 
 marked.use(lazyImage());
 ```

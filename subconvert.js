@@ -7,7 +7,7 @@ const markedKatex = require('marked-katex-extension');
 const linenumber = require('marked-prismjs-linenumber');
 const { gfmHeadingId } = require('marked-gfm-heading-id');
 const markedAlert = require('marked-alert');
-const lazyImage = require('marked-lazy-image');
+const lazyImage = require('marked-image-lazy-loading');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
 const outputDir = path.join(process.cwd(), 'Post');

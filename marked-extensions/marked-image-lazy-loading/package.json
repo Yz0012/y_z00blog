@@ -1,6 +1,6 @@
 {
   "name": "marked-image-lazy-loading",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Add lazy loading for all images",
   "main": "./index.cjs",
   "module": "./index.mjs",
