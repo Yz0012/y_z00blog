@@ -1,4 +1,4 @@
-import mod from './index.cjs';
-export const renderer = mod.renderer;
-export const init = mod.init;
-export default mod;
+import linenumber from './index.cjs';
+
+export default linenumber;
+export { linenumber };
