@@ -27,7 +27,7 @@ function linenumber(options = {}) {
                 const rowsSpans = '<span></span>'.repeat(lineCount);
                 const rowsWrapper = `<span aria-hidden="true" class="line-numbers-rows">${rowsSpans}</span>`;
 
-                return `<pre class="line-numbers language-${language}"><code class="language-${language}">${highlightedCode}</code>${rowsWrapper}</pre>`;
+                return `<pre class="line-numbers language-${language}"><code class="language-${language}">${highlightedCode}${rowsWrapper}</code></pre>`;
             }
         }
     };
