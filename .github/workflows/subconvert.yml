@@ -43,6 +43,9 @@ jobs:
     - name: install prismjs
       run: npm install prismjs
 
+    - name: uninstall marked-prism-linenumber
+      run: npm uninstall marked-prismjs-linenumber
+
     - name: install marked-prism-linenumber
       run: npm install marked-prismjs-linenumber
 
