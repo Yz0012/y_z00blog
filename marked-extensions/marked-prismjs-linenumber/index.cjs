@@ -1,48 +1,38 @@
 const Prism = require('prismjs');
 const loadLanguages = require('prismjs/components/');
 
-/**
- * @param {string} code
- * @param {string} [lang]
- * @returns {string}
- */
-function highlightWithLineNumbers(code, lang = 'plaintext') {
-    const grammar = Prism.languages[lang] || Prism.languages.plaintext;
-
-    let highlightedCode;
-    if (grammar) {
-        highlightedCode = Prism.highlight(code, grammar, lang);
-    } else {
-        highlightedCode = code
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-    }
-
-    const lineCount = code.split('\n').length;
-    const rowsSpans = '<span></span>'.repeat(lineCount);
-    const rowsWrapper = `<span aria-hidden="true" class="line-numbers-rows">${rowsSpans}</span>`;
-    return `<pre class="line-numbers language-${lang}"><code class="language-${lang}">${highlightedCode}</code>${rowsWrapper}</pre>`;
-}
-
-const renderer = {
-    /**
-     * @param {{ text: string; lang?: string }} args
-     * @returns {string}
-     */
-    code({ text, lang }) {
-        const trimmedCode = text.trimEnd();
-        return highlightWithLineNumbers(trimmedCode, lang || 'plaintext');
-    }
-};
-
-/**
- * @param {{ languages?: string[] }} [options]
- */
-function init(options = {}) {
+function linenumber(options = {}) {
     if (Array.isArray(options.languages)) {
         loadLanguages(options.languages);
     }
+
+    return {
+        renderer: {
+            code({ text, lang }) {
+                const language = lang || 'plaintext';
+                const grammar = Prism.languages[language] || Prism.languages.plaintext;
+                const code = text.trimEnd();
+
+                let highlightedCode;
+                if (grammar) {
+                    highlightedCode = Prism.highlight(code, grammar, language);
+                } else {
+                    highlightedCode = code
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                }
+
+                const lineCount = code.split('\n').length;
+                const rowsSpans = '<span></span>'.repeat(lineCount);
+                const rowsWrapper = `<span aria-hidden="true" class="line-numbers-rows">${rowsSpans}</span>`;
+
+                return `<pre class="line-numbers language-${language}"><code class="language-${language}">${highlightedCode}</code>${rowsWrapper}</pre>`;
+            }
+        }
+    };
 }
 
-module.exports = { renderer, init };
+module.exports = linenumber;
+module.exports.default = linenumber;
+module.exports.linenumber = linenumber;
