@@ -61,6 +61,8 @@ console.log(greeting);
 console.log(marked.parse(markdown));
 ```
 
+[Effect display](https://yz0012.github.io/y_z00blog/Post/%E7%A4%BA%E4%BE%8B/%E8%A1%8C%E5%8F%B7%E7%A4%BA%E4%BE%8B.html)
+
 ## API
 
 ### `linenumber(options?)`
