@@ -96,6 +96,12 @@ a:active {
     color: aqua;
 }
 
+article {
+    img {
+        max-width: stretch;
+    }
+}
+
 :root {
     --alert-note: #0969da;
     --alert-tip: #1a7f37;
