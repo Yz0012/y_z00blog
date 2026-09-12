@@ -1,6 +1,6 @@
 # marked-prismjs-linenumber
 
-> A [marked](https://marked.js.org/) extension that highlights Markdown code blocks with [Prism.js](https://prismjs.com/) and renders line numbers — just like the `line-numbers` plugin, but produced straight from the Markdown parser.
+> A [marked](https://marked.js.org/) extension that highlights Markdown code blocks with [Prism.js](https://prismjs.com/) and renders line numbers
 
 [![npm version](https://img.shields.io/npm/v/marked-prismjs-linenumber.svg)](https://www.npmjs.com/package/marked-prismjs-linenumber)
 [![license](https://img.shields.io/npm/l/marked-prismjs-linenumber.svg)](./LICENSE)
@@ -9,13 +9,6 @@
 
 ```bash
 npm install marked-prismjs-linenumber
-```
-
-Or with pnpm / yarn:
-
-```bash
-pnpm add marked-prismjs-linenumber
-yarn add marked-prismjs-linenumber
 ```
 
 You also need `marked` and `prismjs`:
@@ -67,23 +60,6 @@ console.log(greeting);
 
 console.log(marked.parse(markdown));
 ```
-
-### 2. Output
-
-The code block above is rendered as:
-
-```html
-<pre class="line-numbers language-js">
-  <code class="language-js">
-    <span class="token keyword">const</span> greeting <span class="token operator">=</span> ...
-    <span aria-hidden="true" class="line-numbers-rows">
-      <span></span><span></span>
-    </span>
-  </code>
-</pre>
-```
-
-Each `<span></span>` inside `.line-numbers-rows` becomes one line number via the Prism line-numbers CSS.
 
 ## API
 

@@ -5,7 +5,7 @@ const matter = require('gray-matter');
 const cheerio = require('cheerio');
 const markedKatex = require('marked-katex-extension');
 const linenumber = require('marked-prismjs-linenumber');
-const { gfmHeadingId } = require('marked-gfm-headingid');
+const { gfmHeadingId } = require('marked-gfm-heading-id');
 const markedAlert = require('marked-alert');
 
 const sourceDir = path.join(process.cwd(), 'SubMarkdown');
