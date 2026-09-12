@@ -1,7 +1,7 @@
 {
-  "name": "marked-prismjs-linenumber",
-  "version": "0.1.0",
-  "description": "Return HTML with prismjs line-number structure",
+  "name": "marked-image-lazy-loading",
+  "version": "0.0.1",
+  "description": "Add lazy loading for all images",
   "main": "./index.cjs",
   "module": "./index.mjs",
   "types": "./index.d.ts",
@@ -20,16 +20,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yz0012/y_z00blog/tree/main/marked-extensions/marked-prismjs-linenumber"
+    "url": "https://github.com/Yz0012/y_z00blog/tree/main/marked-extensions/marked-image-lazy-loading"
   },
   "peerDependencies": {
-    "marked": ">=4",
-    "prismjs": "^1.29.0"
+    "marked": ">=4"
   },
   "keywords": [
     "marked",
-    "prismjs",
-    "linenumber"
+    "image",
+    "lazy loading"
   ],
   "author": "Y_z00",
   "license": "MIT"

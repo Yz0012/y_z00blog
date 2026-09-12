@@ -1,0 +1,27 @@
+'use strict';
+
+/**
+ * @param {object} [options]
+ * @param {'lazy' | 'eager'} [options.loading='lazy']
+ * @returns {import('marked').MarkedExtension}
+ */
+function lazyImage(options = {}) {
+  const { loading = 'lazy' } = options;
+
+  return {
+    renderer: {
+      /**
+       * @param {{ href: string, title?: string | null, text: string }} token
+       * @returns {string}
+       */
+      image({ href, title, text }) {
+        const titleAttr = title ? ` title="${title}"` : '';
+        return `<img src="${href}" alt="${text}" loading="${loading}"${titleAttr}>`;
+      },
+    },
+  };
+}
+
+module.exports = lazyImage;
+module.exports.lazyImage = lazyImage;
+module.exports.default = lazyImage;
