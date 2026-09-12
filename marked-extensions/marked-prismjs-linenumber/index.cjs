@@ -1,6 +1,11 @@
 const Prism = require('prismjs');
 const loadLanguages = require('prismjs/components/');
 
+/**
+ * @param {string} code
+ * @param {string} [lang]
+ * @returns {string}
+ */
 function highlightWithLineNumbers(code, lang = 'plaintext') {
     const grammar = Prism.languages[lang] || Prism.languages.plaintext;
 
@@ -21,19 +26,23 @@ function highlightWithLineNumbers(code, lang = 'plaintext') {
 }
 
 const renderer = {
+    /**
+     * @param {{ text: string; lang?: string }} args
+     * @returns {string}
+     */
     code({ text, lang }) {
         const trimmedCode = text.trimEnd();
         return highlightWithLineNumbers(trimmedCode, lang || 'plaintext');
     }
 };
 
+/**
+ * @param {{ languages?: string[] }} [options]
+ */
 function init(options = {}) {
     if (Array.isArray(options.languages)) {
         loadLanguages(options.languages);
     }
 }
 
-module.exports = {
-    renderer,
-    init
-};
+module.exports = { renderer, init };

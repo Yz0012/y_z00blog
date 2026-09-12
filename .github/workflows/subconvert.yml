@@ -46,6 +46,9 @@ jobs:
     - name: install marked-prism-linenumber
       run: npm install marked-prismjs-linenumber
 
+    - name: install marked-gfm-heading-id
+      run: npm install marked-gfm-heading-id
+
     - name: convert submarkdown to html
       run: node subconvert.js
 
