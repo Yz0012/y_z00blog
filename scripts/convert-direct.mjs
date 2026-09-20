@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { OUTPUT_DIR } from './config.mjs';
-import { readFrontMatter, getOutputPath } from './front-matter.mjs';
+import { readFrontMatter, getOutputPath, getParentHtmlPath } from './front-matter.mjs';
 import { renderMarkdown } from './markdown.mjs';
 import { buildPage } from './page.mjs';
 
@@ -14,6 +14,7 @@ export function convertDirectArticle(mdPath) {
   const { data, content } = readFrontMatter(mdPath);
 
   const outputPath = getOutputPath(data) || '';
+  const parentPath = getParentHtmlPath(data);
   const outputHtmlDir = path.join(OUTPUT_DIR, outputPath);
 
   if (!fs.existsSync(outputHtmlDir)) {
@@ -23,8 +24,8 @@ export function convertDirectArticle(mdPath) {
   const page = buildPage({
     body: renderMarkdown(content),
     title: path.basename(mdPath, '.md'),
-    belongingHref: '{{ site.baseurl }}/',
-    belongingText: '主页',
+    belongingHref: parentPath ? `{{ site.baseurl }}/Post${parentPath}` : '{{ site.baseurl }}/',
+    belongingText: parentPath ? `从属于${path.basename(parentPath)}` : '主页',
   });
 
   const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
