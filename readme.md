@@ -47,11 +47,9 @@ DirectMarkdown文件夹用于放入直接转换的md文件，有outputDir元数�
 index.html只能手动改，只有初始目录文章转换的链接才会自动出现在这上面
 
 > [!CAUTION]
-> 需要避免的情况
 > 在Markdown，SubMarkdown和DirectMarkdown文件夹下同时放入md文件，由于项目流程上并没有区分它们提交的顺序，这会导致部分流程提交失败。暂时不会考虑同时提交的功能
 
 > [!CAUTION]
-> 保存md文件副本
 > 转换完成后CI/CD会自动删除对应的md文件，假如转换过程中出现问题，CI/CD也会删除上传的md文件，所以请务必保留md文件副本
 
 ## 模板
