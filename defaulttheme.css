@@ -173,10 +173,10 @@ article {
     mask-size: contain;
 }
 
-.markdown-alert-title > svg,
-.markdown-alert-title > img,
-.markdown-alert-title > .octicon {
-  display: none !important;
+.markdown-alert-title>svg,
+.markdown-alert-title>img,
+.markdown-alert-title>.octicon {
+    display: none !important;
 }
 
 .markdown-alert-note {
@@ -222,4 +222,11 @@ article {
 
 .markdown-alert-caution .markdown-alert-title {
     color: var(--alert-caution);
+}
+
+.katex-display {
+    display: block;
+    margin: 1em 0;
+    text-align: center;
+    overflow-y: hidden;
 }
