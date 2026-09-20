@@ -2,12 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { load } from 'cheerio';
 
-/** 生成主页里的一条文章链接 */
 export function buildIndexLink(name) {
   return `<a href="./Post/${name}">${name}</a>`;
 }
 
-/** 用给定的链接 HTML 重建主页 #articlelink 的内容 */
 export function setArticleLinks(indexPath, linksHtml) {
   const raw = fs.readFileSync(indexPath, 'utf8');
   const $ = load(raw);

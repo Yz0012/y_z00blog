@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-/** 遍历源目录下的所有 .md，逐个交给 convertOne 处理 */
+import { deleteSource } from './delete-source.mjs';
+
 export function runFlow(sourceDir, convertOne, emptyMessage = '没有 .md 文件需要转换。') {
   const files = fs.readdirSync(sourceDir).filter((file) => file.endsWith('.md'));
 
@@ -11,6 +12,11 @@ export function runFlow(sourceDir, convertOne, emptyMessage = '没有 .md 文件
   }
 
   for (const file of files) {
-    convertOne(path.join(sourceDir, file));
+    const mdPath = path.join(sourceDir, file);
+    try {
+      convertOne(mdPath);
+    } finally {
+      deleteSource(mdPath);
+    }
   }
 }

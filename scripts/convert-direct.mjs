@@ -31,7 +31,5 @@ export function convertDirectArticle(mdPath) {
   fs.writeFileSync(htmlOutputPath, page, 'utf8');
   console.log(`已转换: ${sourceName} → ${path.posix.join('Post', outputPath, htmlFileName)}`);
 
-  fs.unlinkSync(mdPath);
-  console.log(`已删除: ${sourceName}`);
   return true;
 }
