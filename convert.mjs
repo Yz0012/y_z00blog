@@ -1,5 +1,5 @@
-import { DIRECT_SOURCE_DIR } from './scripts/config.mjs';
+import { TOP_SOURCE_DIR } from './scripts/config.mjs';
 import { convertDirectArticle } from './scripts/convert-direct.mjs';
 import { runFlow } from './scripts/run-flow.mjs';
 
-runFlow(DIRECT_SOURCE_DIR, convertDirectArticle);
+runFlow(TOP_SOURCE_DIR, convertDirectArticle);

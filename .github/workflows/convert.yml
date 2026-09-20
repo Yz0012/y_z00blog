@@ -33,14 +33,38 @@ jobs:
     - name: pull
       run: git pull
 
-    - name: install dependencies
-      run: npm install marked cheerio marked-katex-extension prismjs
+    - name: install gray-matter
+      run: npm install gray-matter
+
+    - name: install marked
+      run: npm install marked
+
+    - name: install cheerio
+      run: npm install cheerio
+
+    - name: install marked-katex
+      run: npm install marked-katex-extension
+
+    - name: install prismjs
+      run: npm install prismjs
+
+    - name: install marked-prism-linenumber
+      run: npm install marked-prismjs-linenumber
+
+    - name: install marked-gfm-heading-id
+      run: npm install marked-gfm-heading-id
+
+    - name: install marked-image-lazy-loading
+      run: npm i marked-image-lazy-loading
+
+    - name: install marked-alert
+      run: npm install marked-alert
 
     - name: convert markdown to html
-      run: node convert.js
+      run: node convert.mjs
 
     - name: run update script
-      run: node alingener.js
+      run: node alingener.mjs
 
     - name: commit changes
       run: |
