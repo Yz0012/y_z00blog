@@ -42,6 +42,8 @@ Then write `@[文本](mycode)` to place a trigger that points to it, shaped like
 
 The trigger itself opens the block in a new browser window. When the rendered html contains at least one trigger, the extension appends the `<script>` that handles the click.
 
+[Effect display](https://yz0012.github.io/y_z00blog/Post/%E7%A4%BA%E4%BE%8B/%E5%85%83%E7%B4%A0%E5%B1%95%E7%A4%BA%E7%A4%BA%E4%BE%8B.html)
+
 ## API
 
 ### `elementDisplay(options?)`
