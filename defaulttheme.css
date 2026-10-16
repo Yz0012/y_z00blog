@@ -70,6 +70,7 @@ html {
 }
 
 pre[class*="language-"] {
+    font-size: smaller !important;
     max-width: 80%;
     -webkit-overflow-scrolling: touch;
 }
