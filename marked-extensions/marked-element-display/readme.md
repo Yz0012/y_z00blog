@@ -33,14 +33,14 @@ int main() {
 :::
 ````
 
-Then write `【mycode】` to place a trigger that points to it.
+Then write `@[文本](mycode)` to place a trigger that points to it, shaped like a markdown link.
 
 ```html
 <div class="element-display" id="mycode">…</div>
-<a class="element-display-open" data-target="mycode" href="#mycode">单独查看</a>
+<a class="element-display-open" data-target="mycode" href="#mycode">文本</a>
 ```
 
-The trigger itself opens the block in a new page. When the rendered html contains at least one trigger, the extension appends the `<script>` that handles the click.
+The trigger itself opens the block in a new browser window. When the rendered html contains at least one trigger, the extension appends the `<script>` that handles the click.
 
 ## API
 
@@ -49,20 +49,19 @@ The trigger itself opens the block in a new page. When the rendered html contain
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `options.block` | `string` | `':::'` | Marks the start and the end of a block |
-| `options.inlineOpen` | `string` | `'【'` | Opens an inline trigger |
-| `options.inlineClose` | `string` | `'】'` | Closes an inline trigger |
-| `options.text` | `string` | `'单独查看'` | Text of the trigger element |
+| `options.inlineOpen` | `string` | `'@['` | Opens the text of an inline trigger |
+| `options.inlineClose` | `string` | `']'` | Closes the text of an inline trigger |
 
 ```js
-elementDisplay({ block: '@@@', inlineOpen: '<<', inlineClose: '>>', text: '打开' });
+elementDisplay({ block: '$$$', inlineOpen: '%[', inlineClose: ']' });
 ```
 
 ```md
-@@@mycode
+$$$mycode
 ...
-@@@
+$$$
 
-点击 <<mycode>>
+点击 %[打开](mycode)
 ```
 
 ## License

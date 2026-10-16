@@ -2,19 +2,23 @@
 
 const DEFAULTS = {
   block: ':::',
-  inlineOpen: '【',
-  inlineClose: '】',
-  text: '单独查看',
+  inlineOpen: '@[',
+  inlineClose: ']',
 };
 
 const CLIENT_SCRIPT = `<script>(function () {
   function openDisplay(target) {
-    var page = window.open('', '_blank');
+    var width = Math.min(window.innerWidth, 900);
+    var height = Math.min(window.innerHeight, 700);
+    var left = Math.max(0, Math.round((window.screen.width - width) / 2));
+    var top = Math.max(0, Math.round((window.screen.height - height) / 2));
+    var features = 'popup=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;
+    var page = window.open('', '_blank', features);
     if (!page) return;
     var doc = page.document;
     doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>');
     doc.close();
-    var nodes = document.querySelectorAll('link[rel="stylesheet"], style, meta[name="viewport"]');
+    var nodes = document.querySelectorAll('link[rel="stylesheet"], link[rel~="icon"], style, meta[name="viewport"]');
     Array.prototype.forEach.call(nodes, function (node) {
       var copy = node.cloneNode(true);
       if (copy.tagName === 'LINK') {
@@ -51,7 +55,7 @@ function escapeRegExp(value) {
 }
 
 function elementDisplay(options = {}) {
-  const { block, inlineOpen, inlineClose, text } = { ...DEFAULTS, ...options };
+  const { block, inlineOpen, inlineClose } = { ...DEFAULTS, ...options };
 
   const blockMark = escapeRegExp(block);
   const openMark = escapeRegExp(inlineOpen);
@@ -62,7 +66,7 @@ function elementDisplay(options = {}) {
     `^${blockMark}[ \\t]*([^\\s]+?)[ \\t]*\\n([\\s\\S]+?)\\n${blockMark}[ \\t]*(?:\\n+|$)`,
   );
   const inlineStart = new RegExp(openMark);
-  const inlineMatch = new RegExp(`^${openMark}([^\\s]+?)${closeMark}`);
+  const inlineMatch = new RegExp(`^${openMark}([^\\n]*?)${closeMark}[ \\t]*\\(([^\\s]+?)\\)`);
 
   return {
     extensions: [
@@ -102,12 +106,13 @@ function elementDisplay(options = {}) {
           return {
             type: 'elementDisplayOpen',
             raw: match[0],
-            id: match[1],
+            id: match[2],
+            text: match[1],
           };
         },
         renderer(token) {
           const id = escapeAttr(token.id);
-          return `<a class="element-display-open" data-target="${id}" href="#${id}">${escapeAttr(text)}</a>`;
+          return `<a class="element-display-open" data-target="${id}" href="#${id}">${escapeAttr(token.text || token.id)}</a>`;
         },
       },
     ],
