@@ -65,6 +65,10 @@
     }
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 pre[class*="language-"] {
     max-width: 80%;
     -webkit-overflow-scrolling: touch;
