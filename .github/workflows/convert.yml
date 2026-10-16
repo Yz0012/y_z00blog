@@ -60,6 +60,9 @@ jobs:
     - name: install marked-alert
       run: npm install marked-alert
 
+    - name: install marked-element-display
+      run: npm install marked-element-display
+
     - name: convert markdown to html
       run: node convert.mjs
 

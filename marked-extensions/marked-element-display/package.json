@@ -1,0 +1,44 @@
+{
+  "name": "marked-element-display",
+  "version": "0.0.1",
+  "description": "Mark a content block with an id and add a trigger that points to it",
+  "keywords": [
+    "marked",
+    "extension",
+    "element",
+    "display"
+  ],
+  "homepage": "https://github.com/Yz0012/y_z00blog/tree/main#readme",
+  "bugs": {
+    "url": "https://github.com/Yz0012/y_z00blog/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yz0012/y_z00blog.git#main"
+  },
+  "license": "MIT",
+  "author": "Y_z00",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.cjs",
+      "default": "./index.mjs"
+    }
+  },
+  "main": "./index.cjs",
+  "types": "./index.d.ts",
+  "files": [
+    "index.mjs",
+    "index.cjs",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "marked": ">=4"
+  },
+  "module": "./index.mjs"
+}
