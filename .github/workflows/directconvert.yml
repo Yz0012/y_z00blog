@@ -61,6 +61,9 @@ jobs:
     - name: convert directmarkdown to html
       run: node directconvert.mjs
 
+    - name: generate sitemap
+      run: node sitemap.mjs
+
     - name: Commit changes
       if: always()
       run: |

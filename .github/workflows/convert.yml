@@ -69,6 +69,9 @@ jobs:
     - name: run update script
       run: node alingener.mjs
 
+    - name: generate sitemap
+      run: node sitemap.mjs
+
     - name: commit changes
       if: always()
       run: |
