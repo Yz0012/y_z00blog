@@ -20,16 +20,22 @@ const CLIENT_SCRIPT = `<script>(function () {
     var page = window.open('', '_blank', features);
     if (!page) return;
     var doc = page.document;
-    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>');
-    doc.close();
-    var nodes = document.querySelectorAll('link[rel="stylesheet"], link[rel~="icon"], style, meta[name="viewport"]');
+    var viewport = document.querySelector('meta[name="viewport"]');
+    var head = '<meta charset="UTF-8">';
+    head += viewport ? viewport.outerHTML : '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+    var nodes = document.querySelectorAll('link[rel="stylesheet"], link[rel~="icon"], style');
     Array.prototype.forEach.call(nodes, function (node) {
-      var copy = node.cloneNode(true);
-      if (copy.tagName === 'LINK') {
+      if (node.tagName === 'LINK') {
+        var copy = node.cloneNode(true);
         copy.href = node.href;
+        head += copy.outerHTML;
+      } else {
+        head += node.outerHTML;
       }
-      doc.head.appendChild(copy);
     });
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head>' + head + '</head><body></body></html>');
+    doc.close();
     doc.title = document.title;
     doc.body.className = document.body.className;
     var article = doc.createElement('article');
