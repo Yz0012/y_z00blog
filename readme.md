@@ -4,6 +4,9 @@
 
 ### 发布文章
 
+> [!CAUTION]
+> 转换完成后Action会自动删除对应的md文件，假如转换过程中出现问题，Action也会删除上传的md文件，所以请务必保留md文件副本
+
 以下有几种发布文章的情况
 
 #### 1.初始目录文章
@@ -46,18 +49,23 @@ DirectMarkdown文件夹用于放入直接转换的md文件，有outputDir元数�
 #### 4.index.html
 index.html只能手动改，只有初始目录文章转换的链接才会自动出现在这上面
 
-> [!CAUTION]
+> [!WARNING]
 > 在Markdown，SubMarkdown和DirectMarkdown文件夹下同时放入md文件，由于项目流程上并没有区分它们提交的顺序，这会导致部分流程提交失败。暂时不会考虑同时提交的功能
-> 转换完成后Action会自动删除对应的md文件，假如转换过程中出现问题，Action也会删除上传的md文件，所以请务必保留md文件副本
 
 ### 模板
 模板的可以在scripts->page.mjs下找到
 
 ### 插件
-插件的可以在scripts->markdown.mjs下找到，你可以在里面找到用了哪些插件，其中[lazyImage](/marked-extensions/marked-image-lazy-loading/readme.md)和[linenumber](/marked-extensions/marked-prismjs-linenumber/readme.md)有更详细的信息
+插件的可以在scripts->markdown.mjs下找到，你可以在里面找到用了哪些插件
+
+[lazyImage](/marked-extensions/marked-image-lazy-loading/readme.md)
+
+[linenumber](/marked-extensions/marked-prismjs-linenumber/readme.md)
+
+[elementDisplay](/marked-extensions/marked-element-display/readme.md)
 
 ### 删除html
-目前只能手动删除，但后续我会完成不影响目录结构并删除程序
+目前只能手动删除，但后续我会尝试完成不影响目录结构并删除程序
 
 ### jekyll
 因为github page的目录与本地目录不同，所以html中需要使用元数据以启用jekyll，html中的'site.baseurl'值在_config.yml可以找到
