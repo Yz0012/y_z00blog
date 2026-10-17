@@ -8,11 +8,15 @@ const DEFAULTS = {
 
 const CLIENT_SCRIPT = `<script>(function () {
   function openDisplay(target) {
-    var width = Math.min(window.innerWidth, 900);
-    var height = Math.min(window.innerHeight, 700);
-    var left = Math.max(0, Math.round((window.screen.width - width) / 2));
-    var top = Math.max(0, Math.round((window.screen.height - height) / 2));
-    var features = 'popup=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;
+    var isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+    var features = '';
+    if (!isMobile) {
+      var width = Math.min(window.innerWidth, 900);
+      var height = Math.min(window.innerHeight, 700);
+      var left = Math.max(0, Math.round((window.screen.width - width) / 2));
+      var top = Math.max(0, Math.round((window.screen.height - height) / 2));
+      features = 'popup=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;
+    }
     var page = window.open('', '_blank', features);
     if (!page) return;
     var doc = page.document;
