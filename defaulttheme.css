@@ -52,6 +52,7 @@ pre[class*="language-"] {
 }
 
 blockquote p {
+    font-style: italic;
     border-left: solid greenyellow;
     margin-left: 0;
     padding-left: 40px;
