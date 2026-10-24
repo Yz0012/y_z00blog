@@ -3,11 +3,12 @@ import path from 'node:path';
 
 import { OUTPUT_DIR } from './config.mjs';
 import { readFrontMatter, getOutputPath, getParentHtmlPath, stringifyFrontMatter } from './front-matter.mjs';
+import { runHooks } from './hooks.mjs';
 import { renderMarkdown } from './markdown.mjs';
 import { buildArticleLink, appendArticleLinkToParent } from './parent-html.mjs';
 import { buildPage } from './page.mjs';
 
-export function convertArticle(mdPath) {
+export function convertArticle(mdPath, { hooks = [] } = {}) {
   const sourceName = path.basename(mdPath);
   const htmlFileName = sourceName.replace(/\.md$/, '.html');
   console.log(`读取到${htmlFileName}`);
@@ -40,8 +41,9 @@ export function convertArticle(mdPath) {
     return false;
   }
 
+  const href = `{{ site.baseurl }}/Post${outputPath}/${htmlFileName}`;
   const articleLink = buildArticleLink({
-    href: `{{ site.baseurl }}/Post${outputPath}/${htmlFileName}`,
+    href,
     name: htmlFileName,
     time: mtime,
   });
@@ -59,6 +61,17 @@ export function convertArticle(mdPath) {
   const htmlOutputPath = path.join(outputHtmlDir, htmlFileName);
   fs.writeFileSync(htmlOutputPath, page, 'utf8');
   console.log(`已转换: ${sourceName} → ${htmlFileName}`);
+  runHooks(hooks, {
+    sourcePath: mdPath,
+    htmlPath: htmlOutputPath,
+    htmlFileName,
+    outputPath,
+    parentPath,
+    title: path.basename(mdPath, '.md'),
+    time: mtime,
+    href,
+    data,
+  });
 
   return true;
 }

@@ -12,3 +12,5 @@ export const DIRECT_SOURCE_DIR = path.join(ROOT_DIR, 'DirectMarkdown');
 export const OUTPUT_DIR = path.join(ROOT_DIR, 'Post');
 
 export const INDEX_PATH = path.join(ROOT_DIR, 'index.html');
+
+export const TIMELINE_PATH = path.join(ROOT_DIR, 'timeline.html');

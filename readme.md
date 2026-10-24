@@ -65,7 +65,7 @@ index.html只能手动改，只有初始目录文章转换的链接才会自动�
 [elementDisplay](/marked-extensions/marked-element-display/readme.md)
 
 ### 删除html
-不会支持，因为存在相互引用，html之间并非纯粹机械化的关系
+不会支持，因为存在相互引用，html之间并非纯粹机械化的关系，只能手动删除
 
 ### jekyll
 因为github page的目录与本地目录不同，所以html中需要使用元数据以启用jekyll，html中的'site.baseurl'值在_config.yml可以找到
