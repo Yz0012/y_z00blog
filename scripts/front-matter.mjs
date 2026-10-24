@@ -13,3 +13,10 @@ export function getOutputPath(data) {
 export function getParentHtmlPath(data) {
   return data.parentPath || false;
 }
+
+export function stringifyFrontMatter(data) {
+  if (!data || Object.keys(data).length === 0) {
+    return '';
+  }
+  return matter.stringify('', data).trimEnd();
+}

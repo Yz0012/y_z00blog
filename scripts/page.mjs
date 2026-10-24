@@ -23,8 +23,9 @@ const TEMPLATE = `---
 
 </html>`;
 
-export function buildPage({ body, title, belongingHref, belongingText }) {
-  let html = TEMPLATE.replace('</article></body>', body + '</article></body>');
+export function buildPage({ body, title, belongingHref, belongingText, frontMatter = '' }) {
+  let html = frontMatter ? TEMPLATE.replace('---\n---', frontMatter) : TEMPLATE;
+  html = html.replace('</article></body>', body + '</article></body>');
   html = html.replace('<title></title>', `<title>${title}</title>`);
   html = html.replace(
     '<a href="" id="belonging"></a>',

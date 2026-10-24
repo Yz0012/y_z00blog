@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { OUTPUT_DIR } from './config.mjs';
-import { readFrontMatter, getOutputPath, getParentHtmlPath } from './front-matter.mjs';
+import { readFrontMatter, getOutputPath, getParentHtmlPath, stringifyFrontMatter } from './front-matter.mjs';
 import { renderMarkdown } from './markdown.mjs';
 import { buildArticleLink, appendArticleLinkToParent } from './parent-html.mjs';
 import { buildPage } from './page.mjs';
@@ -49,6 +49,7 @@ export function convertArticle(mdPath) {
 
   const parentHtmlBasename = path.basename(parentHtmlPath);
   const page = buildPage({
+    frontMatter: stringifyFrontMatter(data),
     body: renderMarkdown(content),
     title: path.basename(mdPath, '.md'),
     belongingHref: `{{ site.baseurl }}/Post${parentPath}`,
