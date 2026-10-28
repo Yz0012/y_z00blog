@@ -65,6 +65,7 @@ blockquote p {
 
 code {
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    color: violet;
 }
 
 a:link {
