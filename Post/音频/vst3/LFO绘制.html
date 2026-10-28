@@ -1,0 +1,514 @@
+---
+outputDir: /音频/vst3
+parentPath: /音频/vst3.html
+---
+
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{{ site.baseurl }}/MainImage/profile.jpg">
+    <link rel="stylesheet" href="{{ site.baseurl }}/defaulttheme.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-funky.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LFO绘制</title>
+</head>
+
+<body>
+<a href="{{ site.baseurl }}/Post/音频/vst3.html" id="belonging">从属于vst3.html</a>
+<article>
+<p>LFO的绘制比较困难</p>
+<p>我的想法是比如说我要做一个lfo，一开始lfo有端点和中间一个用于改变曲线的点（贝塞尔曲线）。然后双击生成一个点，在点的两端创建两个组件，一样包含端点和中间一个点，如此往复以形成复杂的lfo曲线</p>
+<p>点管理器需要增加点的方法，寻找端点的方法以及删除点的方法。这里我使用二分法查找。增加控制点时需要判断控制点在新增端点的左边还是右边。构造函数里初始化点，然后再加两个方法返回端点可控制点</p>
+<h3 id="title-lfocurveview">LFOCurveView</h3>
+<p>LFOCurveView这边需要遍历点。在draw方法里面，外层一层for循环通过读取size()，遍历所有的点。这里很显然控制点始终比端点少一个，所以可以用控制点前面的端点的索引代替控制点的索引</p>
+<p>LFOCurveView.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// ...</span>
+CGraphicsPath<span class="token operator">*</span> path <span class="token operator">=</span> context<span class="token operator">-></span><span class="token function">createGraphicsPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token keyword">double</span> step <span class="token operator">=</span> <span class="token number">2.0</span><span class="token punctuation">;</span> <span class="token comment">//步长</span>
+<span class="token keyword">bool</span> first <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span>size_t i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">double</span> t <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> t <span class="token operator">&lt;=</span> <span class="token number">1.0</span><span class="token punctuation">;</span> t <span class="token operator">+=</span> step <span class="token operator">/</span> w<span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+
+		<span class="token keyword">double</span> x1 <span class="token operator">=</span> yzaudiolib<span class="token double-colon punctuation">::</span>math<span class="token double-colon punctuation">::</span>lerp<span class="token double-colon punctuation">::</span><span class="token function">lerp</span><span class="token punctuation">(</span>lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span>x<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">controlPoints</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span>x<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">double</span> y1 <span class="token operator">=</span> yzaudiolib<span class="token double-colon punctuation">::</span>math<span class="token double-colon punctuation">::</span>lerp<span class="token double-colon punctuation">::</span><span class="token function">lerp</span><span class="token punctuation">(</span>lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span>y<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">controlPoints</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span>y<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token keyword">double</span> x2 <span class="token operator">=</span> yzaudiolib<span class="token double-colon punctuation">::</span>math<span class="token double-colon punctuation">::</span>lerp<span class="token double-colon punctuation">::</span><span class="token function">lerp</span><span class="token punctuation">(</span>lfoPointManager<span class="token punctuation">.</span><span class="token function">controlPoints</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span>x<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span>x<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">double</span> y2 <span class="token operator">=</span> yzaudiolib<span class="token double-colon punctuation">::</span>math<span class="token double-colon punctuation">::</span>lerp<span class="token double-colon punctuation">::</span><span class="token function">lerp</span><span class="token punctuation">(</span>lfoPointManager<span class="token punctuation">.</span><span class="token function">controlPoints</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">.</span>y<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span>y<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token keyword">double</span> x3 <span class="token operator">=</span> yzaudiolib<span class="token double-colon punctuation">::</span>math<span class="token double-colon punctuation">::</span>lerp<span class="token double-colon punctuation">::</span><span class="token function">lerp</span><span class="token punctuation">(</span>x1<span class="token punctuation">,</span> x2<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">double</span> y3 <span class="token operator">=</span> yzaudiolib<span class="token double-colon punctuation">::</span>math<span class="token double-colon punctuation">::</span>lerp<span class="token double-colon punctuation">::</span><span class="token function">lerp</span><span class="token punctuation">(</span>y1<span class="token punctuation">,</span> y2<span class="token punctuation">,</span> t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		CPoint <span class="token function">p</span><span class="token punctuation">(</span>x3<span class="token punctuation">,</span> y3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>first<span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			path<span class="token operator">-></span><span class="token function">beginSubpath</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			first <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		<span class="token keyword">else</span>
+		<span class="token punctuation">{</span>
+			path<span class="token operator">-></span><span class="token function">addLine</span><span class="token punctuation">(</span>p<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token comment">//...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h3 id="title-有关cviewcontainer的东西">有关CViewContainer的东西</h3>
+<p>需要注意到vstgui有一个CViewContainer，要用到它管理子组件。LFO的绘制分成两部分，一部分是点，用LFOPointView对象，需要接收鼠标的信息。一部分是曲线的绘制，用LFOCurveView对象</p>
+<p>LFOPointManager里新增两个方法用于移动点。LFOView中继承CViewContainer，我打算把每一个点单独作为一个对象。显然，点需要知道自己在哪里，所以需要把LFOPointManager作为依赖注入到点中，同时注入索引</p>
+<p>在LFOView声明两个成员，一个是LFOCurveView，一个是LFOPointManager</p>
+<p>LFOView.h</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp">LFOCurveView<span class="token operator">*</span> curveView<span class="token punctuation">;</span>
+LFOPointManager<span class="token operator">&lt;</span><span class="token keyword">float</span><span class="token operator">></span> lfoPointManager<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><p>现在让LFOPointView和LFOCurveView变成CViewContainer的子组件，需要用到addView方法。CViewContainer的addView有两种签名<code>virtual bool addView (CView* pView, CView* pBefore = nullptr);</code>以及<code>bool addView (CView* pView, const CRect&amp; mouseableArea, bool mouseEnabled = true);</code>，需要用到鼠标的CView子类需要使用第二个方法。还可以看到第一个是个虚函数，这是因为第二个调用的时候也会调用第一个，所以子类重写第一个方法之后，第二个方法也能调用第一个方法</p>
+<p>cviewcontainer.cpp</p>
+<div class="element-display" id="addView"><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">bool</span> <span class="token class-name">CViewContainer</span><span class="token double-colon punctuation">::</span><span class="token function">addView</span> <span class="token punctuation">(</span>CView<span class="token operator">*</span> pView<span class="token punctuation">,</span> <span class="token keyword">const</span> CRect <span class="token operator">&amp;</span>mouseableArea<span class="token punctuation">,</span> <span class="token keyword">bool</span> mouseEnabled<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">addView</span> <span class="token punctuation">(</span>pView<span class="token punctuation">,</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// &lt;------在这里调用</span>
+	<span class="token punctuation">{</span>
+		pView<span class="token operator">-></span><span class="token function">setMouseEnabled</span> <span class="token punctuation">(</span>mouseEnabled<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pView<span class="token operator">-></span><span class="token function">setMouseableArea</span> <span class="token punctuation">(</span>mouseableArea<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>CViewContainer会自动管理你的CView子类的生命周期，所以在使用addView传入CView的指针时，相当于所有权转移了，并且编译器不会像rust那样报错。可以直接使用new，你不应该把CView子类声明为成员变量，再然后把指针传进去。所以c++的智能指针当然也是不能用的，通过<code>get()</code>方法，这会导致重复释放，是未定义行为</p>
+<p>在LFOView的构造函数中</p>
+<p>LFOView.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// ...</span>
+curveView <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token function">LFOCurveView</span><span class="token punctuation">(</span>viewSize_<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token keyword">return</span> <span class="token function">addOView</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">addView</span><span class="token punctuation">(</span>curveView<span class="token punctuation">,</span> size<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// ...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre><p>这里说一下绘制的问题。CViewContainer重写了CView的drawRect方法，在CView中draw方法是通过drawRect调用的。但是CViewContainer它的drawRect方法重写成了调用传入CView子类的draw方法，所以继承CViewContainer并重写draw方法是没效果的</p>
+<p>对比CView和CViewContainer的drawRect方法</p>
+<p>cview.h</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token comment">/** called if the view should draw itself */</span>
+<span class="token keyword">virtual</span> <span class="token keyword">void</span> <span class="token function">drawRect</span> <span class="token punctuation">(</span>CDrawContext <span class="token operator">*</span>pContext<span class="token punctuation">,</span> <span class="token keyword">const</span> CRect<span class="token operator">&amp;</span> updateRect<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">draw</span> <span class="token punctuation">(</span>pContext<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><p>cviewcontainer.cpp</p>
+<p><a class="element-display-open" data-target="drawRect" href="#drawRect">drawRect</a></p>
+<div class="element-display" id="drawRect"><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">void</span> <span class="token class-name">CViewContainer</span><span class="token double-colon punctuation">::</span><span class="token function">drawRect</span> <span class="token punctuation">(</span>CDrawContext<span class="token operator">*</span> pContext<span class="token punctuation">,</span> <span class="token keyword">const</span> CRect<span class="token operator">&amp;</span> updateRect<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	CPoint <span class="token function">offset</span> <span class="token punctuation">(</span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>left<span class="token punctuation">,</span> <span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>top<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	CDrawContext<span class="token double-colon punctuation">::</span>Transform <span class="token function">offsetTransform</span> <span class="token punctuation">(</span><span class="token operator">*</span>pContext<span class="token punctuation">,</span> <span class="token function">CGraphicsTransform</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">translate</span> <span class="token punctuation">(</span>offset<span class="token punctuation">.</span>x<span class="token punctuation">,</span> offset<span class="token punctuation">.</span>y<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	CRect <span class="token function">_updateRect</span> <span class="token punctuation">(</span>updateRect<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	_updateRect<span class="token punctuation">.</span><span class="token function">bound</span> <span class="token punctuation">(</span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	CRect <span class="token function">clientRect</span> <span class="token punctuation">(</span>_updateRect<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	clientRect<span class="token punctuation">.</span><span class="token function">offset</span> <span class="token punctuation">(</span><span class="token operator">-</span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>left<span class="token punctuation">,</span> <span class="token operator">-</span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>top<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	CRect oldClip<span class="token punctuation">;</span>
+	pContext<span class="token operator">-></span><span class="token function">getClipRect</span> <span class="token punctuation">(</span>oldClip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	CRect <span class="token function">oldClip2</span> <span class="token punctuation">(</span>oldClip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	CRect <span class="token function">newClip</span> <span class="token punctuation">(</span>clientRect<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	newClip<span class="token punctuation">.</span><span class="token function">bound</span> <span class="token punctuation">(</span>oldClip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	pContext<span class="token operator">-></span><span class="token function">setClipRect</span> <span class="token punctuation">(</span>newClip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token comment">// draw the background</span>
+	<span class="token function">drawBackgroundRect</span> <span class="token punctuation">(</span>pContext<span class="token punctuation">,</span> clientRect<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	CView<span class="token operator">*</span> _focusView <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+	IFocusDrawing<span class="token operator">*</span> _focusDrawing <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+	<span class="token keyword">auto</span> frame <span class="token operator">=</span> <span class="token function">getFrame</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>frame <span class="token operator">&amp;&amp;</span> frame<span class="token operator">-></span><span class="token function">focusDrawingEnabled</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token function">isChild</span> <span class="token punctuation">(</span>frame<span class="token operator">-></span><span class="token function">getFocusView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> frame<span class="token operator">-></span><span class="token function">getFocusView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">isVisible</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> frame<span class="token operator">-></span><span class="token function">getFocusView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">wantsFocus</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		_focusView <span class="token operator">=</span> frame<span class="token operator">-></span><span class="token function">getFocusView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		_focusDrawing <span class="token operator">=</span> <span class="token generic-function"><span class="token function">dynamic_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span>IFocusDrawing<span class="token operator">*</span><span class="token operator">></span></span></span> <span class="token punctuation">(</span>_focusView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token punctuation">{</span>
+		CDrawContext<span class="token double-colon punctuation">::</span>Transform <span class="token function">tr</span> <span class="token punctuation">(</span><span class="token operator">*</span>pContext<span class="token punctuation">,</span> <span class="token function">getTransform</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">getTransform</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">inverse</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">transform</span> <span class="token punctuation">(</span>newClip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">getTransform</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">inverse</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">transform</span> <span class="token punctuation">(</span>clientRect<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">getTransform</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">transform</span> <span class="token punctuation">(</span>oldClip2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token comment">// draw each view</span>
+		<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">auto</span><span class="token operator">&amp;</span> pV <span class="token operator">:</span> pImpl<span class="token operator">-></span>children<span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			<span class="token keyword">if</span> <span class="token punctuation">(</span>pV<span class="token operator">-></span><span class="token function">isVisible</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">{</span>
+				<span class="token keyword">if</span> <span class="token punctuation">(</span>frame <span class="token operator">&amp;&amp;</span> _focusDrawing <span class="token operator">&amp;&amp;</span> _focusView <span class="token operator">==</span> pV <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>_focusDrawing<span class="token operator">-></span><span class="token function">drawFocusOnTop</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+				<span class="token punctuation">{</span>
+					SharedPointer<span class="token operator">&lt;</span>CGraphicsPath<span class="token operator">></span> focusPath <span class="token operator">=</span> <span class="token function">owned</span> <span class="token punctuation">(</span>pContext<span class="token operator">-></span><span class="token function">createGraphicsPath</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token keyword">if</span> <span class="token punctuation">(</span>focusPath<span class="token punctuation">)</span>
+					<span class="token punctuation">{</span>
+						<span class="token keyword">if</span> <span class="token punctuation">(</span>_focusDrawing<span class="token operator">-></span><span class="token function">getFocusPath</span> <span class="token punctuation">(</span><span class="token operator">*</span>focusPath<span class="token punctuation">)</span><span class="token punctuation">)</span>
+						<span class="token punctuation">{</span>
+							<span class="token keyword">auto</span> lastDrawnFocus <span class="token operator">=</span> focusPath<span class="token operator">-></span><span class="token function">getBoundingBox</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+							<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>lastDrawnFocus<span class="token punctuation">.</span><span class="token function">isEmpty</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+							<span class="token punctuation">{</span>
+								pContext<span class="token operator">-></span><span class="token function">setClipRect</span> <span class="token punctuation">(</span>oldClip2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+								pContext<span class="token operator">-></span><span class="token function">setDrawMode</span> <span class="token punctuation">(</span>kAntiAliasing<span class="token operator">|</span>kNonIntegralMode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+								pContext<span class="token operator">-></span><span class="token function">setFillColor</span> <span class="token punctuation">(</span>frame<span class="token operator">-></span><span class="token function">getFocusColor</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+								pContext<span class="token operator">-></span><span class="token function">drawGraphicsPath</span> <span class="token punctuation">(</span>focusPath<span class="token punctuation">,</span> CDrawContext<span class="token double-colon punctuation">::</span>kPathFilledEvenOdd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+								lastDrawnFocus<span class="token punctuation">.</span><span class="token function">extend</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+								<span class="token function">setLastDrawnFocus</span> <span class="token punctuation">(</span>lastDrawnFocus<span class="token punctuation">)</span><span class="token punctuation">;</span>
+							<span class="token punctuation">}</span>
+							_focusDrawing <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+							_focusView <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+						<span class="token punctuation">}</span>
+					<span class="token punctuation">}</span>
+				<span class="token punctuation">}</span>
+
+				<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">checkUpdateRect</span> <span class="token punctuation">(</span>pV<span class="token punctuation">,</span> clientRect<span class="token punctuation">)</span><span class="token punctuation">)</span>
+				<span class="token punctuation">{</span>
+					CRect viewSize <span class="token operator">=</span> pV<span class="token operator">-></span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					viewSize<span class="token punctuation">.</span><span class="token function">bound</span> <span class="token punctuation">(</span>newClip<span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token keyword">if</span> <span class="token punctuation">(</span>viewSize<span class="token punctuation">.</span><span class="token function">getWidth</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> viewSize<span class="token punctuation">.</span><span class="token function">getHeight</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+						<span class="token keyword">continue</span><span class="token punctuation">;</span>
+					pContext<span class="token operator">-></span><span class="token function">setClipRect</span> <span class="token punctuation">(</span>viewSize<span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token keyword">float</span> globalContextAlpha <span class="token operator">=</span> pContext<span class="token operator">-></span><span class="token function">getGlobalAlpha</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					pContext<span class="token operator">-></span><span class="token function">setGlobalAlpha</span> <span class="token punctuation">(</span>globalContextAlpha <span class="token operator">*</span> pV<span class="token operator">-></span><span class="token function">getAlphaValue</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					pV<span class="token operator">-></span><span class="token function">drawRect</span> <span class="token punctuation">(</span>pContext<span class="token punctuation">,</span> viewSize<span class="token punctuation">)</span><span class="token punctuation">;</span>
+					pContext<span class="token operator">-></span><span class="token function">setGlobalAlpha</span> <span class="token punctuation">(</span>globalContextAlpha<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">if</span> <span class="token expression">DEBUG</span></span>
+					<span class="token keyword">static</span> <span class="token keyword">bool</span> drawViewWireFrames <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+					<span class="token keyword">if</span> <span class="token punctuation">(</span>drawViewWireFrames<span class="token punctuation">)</span>
+					<span class="token punctuation">{</span>
+						pContext<span class="token operator">-></span><span class="token function">setFrameColor</span> <span class="token punctuation">(</span>kRedCColor<span class="token punctuation">)</span><span class="token punctuation">;</span>
+						pContext<span class="token operator">-></span><span class="token function">setLineWidth</span> <span class="token punctuation">(</span>pContext<span class="token operator">-></span><span class="token function">getHairlineSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+						pContext<span class="token operator">-></span><span class="token function">setLineStyle</span> <span class="token punctuation">(</span>kLineSolid<span class="token punctuation">)</span><span class="token punctuation">;</span>
+						pContext<span class="token operator">-></span><span class="token function">drawRect</span> <span class="token punctuation">(</span>pV<span class="token operator">-></span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+					<span class="token punctuation">}</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">endif</span></span>
+				<span class="token punctuation">}</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+
+	pContext<span class="token operator">-></span><span class="token function">setClipRect</span> <span class="token punctuation">(</span>oldClip2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>frame <span class="token operator">&amp;&amp;</span> _focusView<span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		SharedPointer<span class="token operator">&lt;</span>CGraphicsPath<span class="token operator">></span> focusPath <span class="token operator">=</span> <span class="token function">owned</span> <span class="token punctuation">(</span>pContext<span class="token operator">-></span><span class="token function">createGraphicsPath</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>focusPath<span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			<span class="token keyword">if</span> <span class="token punctuation">(</span>_focusDrawing<span class="token punctuation">)</span>
+				_focusDrawing<span class="token operator">-></span><span class="token function">getFocusPath</span> <span class="token punctuation">(</span><span class="token operator">*</span>focusPath<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">else</span>
+			<span class="token punctuation">{</span>
+				CCoord focusWidth <span class="token operator">=</span> frame<span class="token operator">-></span><span class="token function">getFocusWidth</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+				CRect <span class="token function">r</span> <span class="token punctuation">(</span>_focusView<span class="token operator">-></span><span class="token function">getVisibleViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+				<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>r<span class="token punctuation">.</span><span class="token function">isEmpty</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+				<span class="token punctuation">{</span>
+					focusPath<span class="token operator">-></span><span class="token function">addRect</span> <span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+					r<span class="token punctuation">.</span><span class="token function">extend</span> <span class="token punctuation">(</span>focusWidth<span class="token punctuation">,</span> focusWidth<span class="token punctuation">)</span><span class="token punctuation">;</span>
+					focusPath<span class="token operator">-></span><span class="token function">addRect</span> <span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+				<span class="token punctuation">}</span>
+			<span class="token punctuation">}</span>
+			<span class="token keyword">auto</span> lastDrawnFocus <span class="token operator">=</span> focusPath<span class="token operator">-></span><span class="token function">getBoundingBox</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>lastDrawnFocus<span class="token punctuation">.</span><span class="token function">isEmpty</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">{</span>
+				pContext<span class="token operator">-></span><span class="token function">setDrawMode</span> <span class="token punctuation">(</span>kAntiAliasing<span class="token operator">|</span>kNonIntegralMode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+				pContext<span class="token operator">-></span><span class="token function">setFillColor</span> <span class="token punctuation">(</span>frame<span class="token operator">-></span><span class="token function">getFocusColor</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+				pContext<span class="token operator">-></span><span class="token function">drawGraphicsPath</span> <span class="token punctuation">(</span>focusPath<span class="token punctuation">,</span> CDrawContext<span class="token double-colon punctuation">::</span>kPathFilledEvenOdd<span class="token punctuation">)</span><span class="token punctuation">;</span>
+				lastDrawnFocus<span class="token punctuation">.</span><span class="token function">extend</span> <span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+				<span class="token function">setLastDrawnFocus</span> <span class="token punctuation">(</span>lastDrawnFocus<span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token function">setDirty</span> <span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>可以看到cviewcontainer.cpp不会调用自身的draw方法。因此我们并不能复制在CView里的操作：覆写draw方法画东西。不过仍有方法在CViewContainer用子类画东西，利用多态，覆写CViewContainer的drawRect方法，然后在子类覆写的方法里调用父类的方法就可以了</p>
+<h3 id="title-鼠标事件">鼠标事件</h3>
+<p>然后就是addView了，把指针都传进去。lfoPointView要使用带有mouseableArea参数的那个方法，这里需要观察这个方法的实现。在CViewContainer中找到<a class="element-display-open" data-target="addView" href="#addView">实现方法</a>，可以看到指针传入后首先调用了第一个addView方法，第二个参数传入nullptr，然后里面调用了传入CView子类的setMouseEnabled和setMouseableArea方法。再来看看<a class="element-display-open" data-target="setMouseableArea" href="#setMouseableArea">setMouseableArea</a>的实现，这段代码很显然就是检查是否是同一个矩形，相同就去掉这个鼠标事件的区域，使用整个view接收鼠标事件，不同就直接设置区域。改变区域时应该是不用手动去掉旧区域的</p>
+<div class="element-display" id="setMouseableArea"><p>cview.cpp</p><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">void</span> <span class="token class-name">CView</span><span class="token double-colon punctuation">::</span><span class="token function">setMouseableArea</span> <span class="token punctuation">(</span><span class="token keyword">const</span> CRect<span class="token operator">&amp;</span> rect<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>pImpl<span class="token operator">-></span>size <span class="token operator">==</span> rect<span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token function">setViewFlag</span> <span class="token punctuation">(</span>kHasMouseableArea<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">removeAttribute</span> <span class="token punctuation">(</span>kCViewMouseableAreaAttrID<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">else</span>
+	<span class="token punctuation">{</span>
+		<span class="token function">setViewFlag</span> <span class="token punctuation">(</span>kHasMouseableArea<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">setAttribute</span> <span class="token punctuation">(</span>kCViewMouseableAreaAttrID<span class="token punctuation">,</span> rect<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>再说一下鼠标事件顺序的问题，第一个addView方法，也就是<code>CView *pView, CView* pBefore</code>这个签名的，<a class="element-display-open" data-target="addView_2" href="#addView_2">打开CViewContainer里的实现</a>，在这里面pBefore接收到的其实是前一个CView的指针，还可以发现里面是使用list管理你传入的CView子类，你可以指定pBefore，它就会找到pBefore的位置并insert到其中，需要知道事件的顺序与addView调用的顺序有关。再提一下如果覆写CViewContainer的onMouseDownEvent事件，这个事件的优先级会在通过addView传入的所有CView子类的上方</p>
+<div class="element-display" id="addView_2"><p>cviewcontainer.cpp</p><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">//vst3sdk</span>
+<span class="token keyword">bool</span> <span class="token class-name">CViewContainer</span><span class="token double-colon punctuation">::</span><span class="token function">addView</span> <span class="token punctuation">(</span>CView <span class="token operator">*</span>pView<span class="token punctuation">,</span> CView<span class="token operator">*</span> pBefore<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>pView<span class="token punctuation">)</span>
+		<span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+	<span class="token function">vstgui_assert</span> <span class="token punctuation">(</span><span class="token operator">!</span>pView<span class="token operator">-></span><span class="token function">isSubview</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"view is already added to a container view"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>pBefore<span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">auto</span> it <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">find</span> <span class="token punctuation">(</span>pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">begin</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">end</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pBefore<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">vstgui_assert</span> <span class="token punctuation">(</span>it <span class="token operator">!=</span> pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">end</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">insert</span> <span class="token punctuation">(</span>it<span class="token punctuation">,</span> pView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">else</span>
+	<span class="token punctuation">{</span>
+		pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">emplace_back</span> <span class="token punctuation">(</span>pView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	pView<span class="token operator">-></span><span class="token function">setSubviewState</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	pImpl<span class="token operator">-></span>viewContainerListeners<span class="token punctuation">.</span><span class="token function">forEach</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token operator">&amp;</span><span class="token punctuation">]</span> <span class="token punctuation">(</span>IViewContainerListener<span class="token operator">*</span> listener<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		listener<span class="token operator">-></span><span class="token function">viewContainerViewAdded</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> pView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isAttached</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		pView<span class="token operator">-></span><span class="token function">attached</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pView<span class="token operator">-></span><span class="token function">invalid</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>LFOPointView继承的是CParamDisplay和CMouseWheelEditingSupport，为什么继承这两个，因为我抄的cxypad。这个类要实现的东西和我现在要实现的东西比较接近，CParamDisplay是CControl的子类，里面的isDirty方法会判断值是否是之前的值，只有当值改变时才会return true。里面有一个setValue的方法，会改变value并且限制在最大值和最小值间，或者直接改value也可以</p>
+<p>ccontrol.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">bool</span> <span class="token class-name">CControl</span><span class="token double-colon punctuation">::</span><span class="token function">isDirty</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">getOldValue</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">!=</span> value <span class="token operator">||</span> <span class="token class-name">CView</span><span class="token double-colon punctuation">::</span><span class="token function">isDirty</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>cxypad里面有很多的鼠标事件，让我们进行一般的抄袭。还要注意里面有<code>event.consumed = true;</code>，没有这个是不会调用onMouseUpEvent和onMouseMoveEvent等其它函数的。里面有一些东西是我们不需要的，比如<code>getRoundRectRadius()</code>，<code>offset()</code>这种方法</p>
+<p>cxypad.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">void</span> <span class="token class-name">CXYPad</span><span class="token double-colon punctuation">::</span><span class="token function">onMouseDownEvent</span> <span class="token punctuation">(</span>MouseDownEvent<span class="token operator">&amp;</span> event<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span>buttonState<span class="token punctuation">.</span><span class="token function">isLeft</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token function">invalidMouseWheelEditTimer</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		mouseStartValue <span class="token operator">=</span> <span class="token function">getValue</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		mouseChangeStartPoint <span class="token operator">=</span> event<span class="token punctuation">.</span>mousePosition<span class="token punctuation">;</span>
+		mouseChangeStartPoint<span class="token punctuation">.</span><span class="token function">offset</span> <span class="token punctuation">(</span><span class="token operator">-</span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>left <span class="token operator">-</span> <span class="token function">getRoundRectRadius</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2.</span><span class="token punctuation">,</span>
+		                              <span class="token operator">-</span><span class="token function">getViewSize</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>top <span class="token operator">-</span> <span class="token function">getRoundRectRadius</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2.</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">beginEdit</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">onMouseMove</span> <span class="token punctuation">(</span>event<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// event.consumed = true;在这个方法里面</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>在new LFOPointView的时候，需要传入一个CRect，传入的是LFOView的size，不是LFOPointView绘制的大小和位置。这时候通过<code>auto where = event.mousePosition;</code>获取的坐标原点就是CRect的左上角。这点和juce框架是一样的</p>
+<p>LFOView.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">auto</span><span class="token operator">*</span> point <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token function">LFOPointView</span><span class="token punctuation">(</span><span class="token function">CRect</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>right<span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>bottom<span class="token punctuation">)</span><span class="token punctuation">,</span> lastIndex<span class="token punctuation">,</span> pointRadius<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre><p>画点的位置在<code>CRect r(x - pointRadius, y - pointRadius, x + pointRadius, y + pointRadius);</code>，调用<code>setMouseableArea(CRect(where.x - pointRadius, where.y - pointRadius, where.x + pointRadius, where.y + pointRadius));</code>，设置鼠标事件区域，pointRadius是一个常量，字面意思就是点半径。这个不能直接用鼠标位置的值，因为鼠标的坐标容易飞出组件外，用LFOPointManager已经判断好边界的值</p>
+<p>LFOPointView.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">LFOPointView</span><span class="token double-colon punctuation">::</span><span class="token function">onMouseMoveEvent</span><span class="token punctuation">(</span>MouseMoveEvent<span class="token operator">&amp;</span> event<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span>buttonState<span class="token punctuation">.</span><span class="token function">isLeft</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token function">isEditing</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">auto</span> where <span class="token operator">=</span> event<span class="token punctuation">.</span>mousePosition<span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>stopTrackingOnMouseExit<span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">hitTest</span><span class="token punctuation">(</span>where<span class="token punctuation">,</span> event<span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token punctuation">{</span>
+				<span class="token function">endEdit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+				event<span class="token punctuation">.</span><span class="token function">ignoreFollowUpMoveAndUpEvents</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+				event<span class="token punctuation">.</span>consumed <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+				<span class="token keyword">return</span><span class="token punctuation">;</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
+
+		lfoPointManager<span class="token punctuation">.</span><span class="token function">movePoints</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">,</span> where<span class="token punctuation">.</span>x<span class="token punctuation">,</span> where<span class="token punctuation">.</span>y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">auto</span> x <span class="token operator">=</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">.</span>x<span class="token punctuation">;</span>
+		<span class="token keyword">auto</span> y <span class="token operator">=</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">.</span>y<span class="token punctuation">;</span>
+		value <span class="token operator">=</span> <span class="token function">calculateValue</span><span class="token punctuation">(</span>x<span class="token punctuation">,</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isDirty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			<span class="token function">valueChanged</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+			<span class="token function">invalid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		event<span class="token punctuation">.</span>consumed <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>比如在这里直接setMouseableArea，直接传入where.x和where.y的值。我的setMouseableArea写到了draw方法里，虽然语义不正确，但是先这样用着</p>
+<p>我学习cxypad用calculateValue和calculateXY这两个函数来保存值，但是calculateXY这个用不用都无所谓了，前面说到value的值改变了isDirty()才是true，所以用<code>value = calculateValue(x, y);</code>这一行改变值</p>
+<p>cxypad.h</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">static</span> <span class="token keyword">float</span> <span class="token function">calculateValue</span> <span class="token punctuation">(</span><span class="token keyword">float</span> x<span class="token punctuation">,</span> <span class="token keyword">float</span> y<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	x <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">floor</span> <span class="token punctuation">(</span>x <span class="token operator">*</span> <span class="token number">1000.f</span> <span class="token operator">+</span> <span class="token number">0.5f</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">0.001f</span><span class="token punctuation">;</span>
+	y <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">floor</span> <span class="token punctuation">(</span>y <span class="token operator">*</span> <span class="token number">1000.f</span> <span class="token operator">+</span> <span class="token number">0.5f</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">0.0000001f</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> x <span class="token operator">+</span> y<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>这段代码我看不懂</p>
+<p>然后再写一个LFOControlPointView，但是比较简单，都是复制粘贴罢了</p>
+<p>下一步就是要做新增点，这一步在画曲线那里做吧，因为曲线的mouseableArea正好是组件的大小，而且addView在点的前面。检测双击的函数需要自己写，让ai写一小段简单的检测方法就行了</p>
+<p>DetectDoubleClick.h</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;chrono></span></span>
+
+<span class="token keyword">namespace</span> yzaudiolib<span class="token double-colon punctuation">::</span>tools<span class="token double-colon punctuation">::</span>DetectDoubleClick
+<span class="token punctuation">{</span>
+    <span class="token keyword">inline</span> <span class="token keyword">int</span> <span class="token function">detectDoubleClick</span><span class="token punctuation">(</span><span class="token keyword">int</span> interval <span class="token operator">=</span> <span class="token number">500</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token keyword">using</span> <span class="token keyword">namespace</span> std<span class="token double-colon punctuation">::</span>chrono<span class="token punctuation">;</span>
+
+        <span class="token keyword">static</span> steady_clock<span class="token double-colon punctuation">::</span>time_point lastClickTime<span class="token punctuation">;</span>
+        <span class="token keyword">static</span> <span class="token keyword">bool</span> hasLastClick <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">auto</span> now <span class="token operator">=</span> steady_clock<span class="token double-colon punctuation">::</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>hasLastClick<span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+            <span class="token keyword">auto</span> elapsed <span class="token operator">=</span> <span class="token generic-function"><span class="token function">duration_cast</span><span class="token generic class-name"><span class="token operator">&lt;</span>milliseconds<span class="token operator">></span></span></span><span class="token punctuation">(</span>now <span class="token operator">-</span> lastClickTime<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">count</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>elapsed <span class="token operator">&lt;=</span> interval<span class="token punctuation">)</span>
+            <span class="token punctuation">{</span>
+                hasLastClick <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+                <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        lastClickTime <span class="token operator">=</span> now<span class="token punctuation">;</span>
+        hasLastClick <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h3 id="title-新增点">新增点</h3>
+<p>新增点需要执行addView等操作，不过不能直接给LFOCurveView注入LFOView，因为这会导致互相include无法通过编译，而且这样也会增加耦合。假设LFOCurveView对回调的函数一无所知，只有一个pointIndex，那就不能向前声明或者include，它应该只是一味地进行调用，然后传入pointIndex，至于怎么使用pointIndex那是外界的事，这就划分清楚职责关系了，把具体怎么做移交到外部，不需要自己考虑。所以为了能让addView正常调用同时不违背依赖倒置原则，这里会使用函数指针。但是按照这个理论，我前面做的一些东西其实都不太好，这些工作到重构在做。这里注入函数指针，把函数指针作为LFOCurveView的依赖，用的是std::function，这个是有类型擦除性能开销的，不过在ui回调这里可以接受。具体重构在这里</p>
+<p>LFOPointView.h</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// ...</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+	<span class="token keyword">using</span> Callback <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span>function<span class="token operator">&lt;</span><span class="token keyword">int</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token operator">></span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> <span class="token function">setCallback</span><span class="token punctuation">(</span>Callback cbf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">int</span> <span class="token function">callBack</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span> <span class="token keyword">const</span><span class="token punctuation">;</span>
+<span class="token comment">// ...</span>
+
+<span class="token keyword">private</span><span class="token operator">:</span>
+    Callback cb <span class="token operator">=</span> <span class="token keyword">nullptr</span><span class="token punctuation">;</span>
+<span class="token comment">// ...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>LFOPointView.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">LFOPointView</span><span class="token double-colon punctuation">::</span><span class="token function">onMouseDownEvent</span><span class="token punctuation">(</span>MouseDownEvent<span class="token operator">&amp;</span> event<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span>buttonState<span class="token punctuation">.</span><span class="token function">isLeft</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+        <span class="token comment">// ...</span>
+		<span class="token function">callBack</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">int</span> <span class="token class-name">LFOPointView</span><span class="token double-colon punctuation">::</span><span class="token function">setCallback</span><span class="token punctuation">(</span>Callback cbf<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">this</span><span class="token operator">-></span>cb <span class="token operator">=</span> cbf<span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">int</span> <span class="token class-name">LFOPointView</span><span class="token double-colon punctuation">::</span><span class="token function">callBack</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span> <span class="token keyword">const</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>cb <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token function">cb</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>addView完成后，现在有一个问题，点的绘制如何刷新？现在的问题是每一个点对象存有自己的pointIndex，addView后需要全部改变吗？实际上可以发现，addView后即使不改变每一个点对象的pointIndex，它们都有对应点的位置。新增的点位置在哪里，我们并不关心，因为刷新时它们都已经有对应的点了，只是多出来最后一个点。所以我需要想想点这个对象在刷新时需要改变那些状态，第一个就是mouseableArea，这个要在刷新的时候重新设置，由于addView后会进行重绘，需要把mouseableArea放draw里面，这就是为什么我要把一个语义毫不相关的mouseableArea放draw里面。然后就似乎没有东西可以改了。对于controlPoint也一样</p>
+<p>举例一下：比如说LFOPointManager里面有0，1，2，3这几个点，现在LFOPointView都有对应的实例来绘制它们，索引分别为0，1，2，3。现在新增一个点在1，2之间变成0，1，2，3，4。现在是不是前四个点仍然有对应的实例绘制，所以只需要新增最后面一个实例就足够了</p>
+<p>LFOView.cpp</p>
+<div class="element-display" id="addOView"><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">int</span> <span class="token class-name">LFOView</span><span class="token double-colon punctuation">::</span><span class="token function">addOView</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">auto</span> lastIndex <span class="token operator">=</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">;</span>
+	CRect <span class="token function">r</span><span class="token punctuation">(</span>lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>lastIndex<span class="token punctuation">)</span><span class="token punctuation">.</span>x <span class="token operator">-</span> pointRadius
+		<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>lastIndex<span class="token punctuation">)</span><span class="token punctuation">.</span>y <span class="token operator">-</span> pointRadius
+		<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>lastIndex<span class="token punctuation">)</span><span class="token punctuation">.</span>x <span class="token operator">+</span> pointRadius
+		<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">.</span><span class="token function">points</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">at</span><span class="token punctuation">(</span>lastIndex<span class="token punctuation">)</span><span class="token punctuation">.</span>y <span class="token operator">+</span> pointRadius<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">auto</span><span class="token operator">*</span> point <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token function">LFOPointView</span><span class="token punctuation">(</span><span class="token function">CRect</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>right<span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>bottom<span class="token punctuation">)</span><span class="token punctuation">,</span> lastIndex<span class="token punctuation">,</span> pointRadius<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	point<span class="token operator">-></span><span class="token function">setCallback</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token keyword">return</span> <span class="token function">deleteControlPoint</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">addView</span><span class="token punctuation">(</span>point<span class="token punctuation">,</span> r<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">addView</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token function">LFOControlPointView</span><span class="token punctuation">(</span><span class="token function">CRect</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>right<span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>bottom<span class="token punctuation">)</span><span class="token punctuation">,</span> lastIndex<span class="token punctuation">,</span> controlPointRadius<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">)</span><span class="token punctuation">,</span> r<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>然后通过setCallback方法把函数给LFOCurvePoint回调
+<code>curveView = new LFOCurveView(viewSize_, lfoPointManager, [this](int pointIndex) {return addOView(pointIndex);});</code></p>
+<h3 id="title-删除点">删除点</h3>
+<p>用鼠标右键删除point，在onMouseMoveEvent判断鼠标右键。与添加点一样，需要删除最后一个点的实例，这里用到<code>bool CViewContainer::removeView (CView *pView, bool withForget)</code>，后面这个<a class="element-display-open" data-target="removeView" href="#removeView">forget</a>就是减少引用计数的，因为它是<code>std::list&lt;SharedPointer&lt;CView&gt;&gt;</code>这样管理CView的嘛。同样，LFOPointView也要实现一个回调，但是这里需要向外传自身的指针？好吧其实并不需要，因为也还是删除最后一个，直接用<code>CView* CViewContainer::getView (uint32_t index) const</code>拿指针就行</p>
+<div class="element-display" id="removeView"><p>cviewcontainer.cpp</p><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
+<span class="token keyword">bool</span> <span class="token class-name">CViewContainer</span><span class="token double-colon punctuation">::</span><span class="token function">removeView</span> <span class="token punctuation">(</span>CView <span class="token operator">*</span>pView<span class="token punctuation">,</span> <span class="token keyword">bool</span> withForget<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">auto</span> it <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">find</span> <span class="token punctuation">(</span>pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">begin</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">end</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> pView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>it <span class="token operator">!=</span> pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">end</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>pView <span class="token operator">==</span> <span class="token function">getInitialFocusView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token function">setInitialFocusView</span> <span class="token punctuation">(</span><span class="token keyword">nullptr</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pView<span class="token operator">-></span><span class="token function">invalid</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>pView <span class="token operator">==</span> <span class="token function">getMouseDownView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			<span class="token function">clearMouseDownView</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isAttached</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+			pView<span class="token operator">-></span><span class="token function">removed</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pView<span class="token operator">-></span><span class="token function">setSubviewState</span> <span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pImpl<span class="token operator">-></span>viewContainerListeners<span class="token punctuation">.</span><span class="token function">forEach</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token operator">&amp;</span><span class="token punctuation">]</span> <span class="token punctuation">(</span>IViewContainerListener<span class="token operator">*</span> listener<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+			listener<span class="token operator">-></span><span class="token function">viewContainerViewRemoved</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> pView<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span>withForget<span class="token punctuation">)</span>
+			pView<span class="token operator">-></span><span class="token function">forget</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		pImpl<span class="token operator">-></span>children<span class="token punctuation">.</span><span class="token function">erase</span> <span class="token punctuation">(</span>it<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<p>现在有一个问题，右键调用的是vstplugintesthost的菜单，并没有回调我们所需的方法。经过我的查找，找到了这个<a href="https://forums.steinberg.net/t/right-button-mouse-click-is-not-always-available/909372">Right button mouse click is not always available</a>这里说宿主可能实现了IContextMenu，然后right click不生效，所以这里图方便用鼠标左键+kAlt删除点</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">void</span> <span class="token class-name">LFOPointView</span><span class="token double-colon punctuation">::</span><span class="token function">onMouseDownEvent</span><span class="token punctuation">(</span>MouseDownEvent<span class="token operator">&amp;</span> event<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>event<span class="token punctuation">.</span>buttonState<span class="token punctuation">.</span><span class="token function">isLeft</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token function">invalidMouseWheelEditTimer</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token function">beginEdit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		event<span class="token punctuation">.</span>consumed <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>yzaudiolib<span class="token double-colon punctuation">::</span>tools<span class="token double-colon punctuation">::</span>detectDoubleClick<span class="token double-colon punctuation">::</span><span class="token function">detectDoubleClick</span><span class="token punctuation">(</span><span class="token number">150</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		event<span class="token punctuation">.</span>consumed <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+		<span class="token function">callBack</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>event<span class="token punctuation">.</span>modifiers<span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>ModifierKey<span class="token double-colon punctuation">::</span>Alt<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+		event<span class="token punctuation">.</span>consumed <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+		<span class="token function">callBack</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token keyword">return</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>我花了半天的时间去想怎么把LFOPointView销毁自身，比如仿照前面回调，在LFOView这里删除自身。不过在销毁后有一个问题，在LFOView这里回调调用removeView后，此时LFOPointView的mouse的调用栈没有退出，包括使用<code>VSTGUI::SharedPointer&lt;VSTGUI::CView&gt; keepAlive(this);</code>尝试增加引用计数，都会报错</p>
+<blockquote>
+<p>引发了异常: 读取访问权限冲突。
+pV.ptr 是 0xFFFFFFFFFFFFFFFF。</p>
+</blockquote>
+<p>然后我才想到我根本不需要销毁LFOPointView，因为我只需要在draw()那里加上判断就可以防止LFOPointView用越界的索引去读取vector了，这样既不会重绘也可以清除鼠标区域。这时职责划分的优势就体现出来了，LFOPointView只需要关注自身，虽然我之前没想到</p>
+<p>其实不删除也是不行的，因为上面那个<a class="element-display-open" data-target="addOView" href="#addOView">addOView</a>始终在创建实例，还是需要考虑销毁对象的。比如使用类似于垃圾回收的方式，给每个LFOPointView贴上标签，删除点时回调检查末尾有没有多余的对象，然后删除</p>
+<p>最终代码的呈现可能与这里列举的代码有所不同，因为这是我写代码时写的。我尽可能多的记录有关vst3框架的东西</p>
+<p><span title="我只是在偷偷讲些c++小知识罢了😋">-</span></p>
+<script>(function () {
+  function openDisplay(target) {
+    var isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
+    var features = '';
+    if (!isMobile) {
+      var width = Math.min(window.innerWidth, 900);
+      var height = Math.min(window.innerHeight, 700);
+      var left = Math.max(0, Math.round((window.screen.width - width) / 2));
+      var top = Math.max(0, Math.round((window.screen.height - height) / 2));
+      features = 'popup=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;
+    }
+    var page = window.open('', '_blank', features);
+    if (!page) return;
+    var doc = page.document;
+    var viewport = document.querySelector('meta[name="viewport"]');
+    var head = '<meta charset="UTF-8">';
+    head += viewport ? viewport.outerHTML : '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+    var nodes = document.querySelectorAll('link[rel="stylesheet"], link[rel~="icon"], style');
+    Array.prototype.forEach.call(nodes, function (node) {
+      if (node.tagName === 'LINK') {
+        var copy = node.cloneNode(true);
+        copy.href = node.href;
+        head += copy.outerHTML;
+      } else {
+        head += node.outerHTML;
+      }
+    });
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head>' + head + '</head><body></body></html>');
+    doc.close();
+    doc.title = document.title;
+    doc.body.className = document.body.className;
+    var article = doc.createElement('article');
+    article.appendChild(target.cloneNode(true));
+    doc.body.appendChild(article);
+  }
+  document.addEventListener('click', function (event) {
+    var trigger = event.target.closest('.element-display-open');
+    if (!trigger) return;
+    var target = document.getElementById(trigger.dataset.target);
+    if (!target) return;
+    event.preventDefault();
+    openDisplay(target);
+  });
+})();</script></article></body>
+<script src="{{ site.baseurl }}/defaultscript.js"></script>
+
+</html>
