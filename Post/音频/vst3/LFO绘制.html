@@ -23,8 +23,9 @@ parentPath: /音频/vst3.html
 <p>LFO的绘制比较困难</p>
 <p>我的想法是比如说我要做一个lfo，一开始lfo有端点和中间一个用于改变曲线的点（贝塞尔曲线）。然后双击生成一个点，在点的两端创建两个组件，一样包含端点和中间一个点，如此往复以形成复杂的lfo曲线</p>
 <p>点管理器需要增加点的方法，寻找端点的方法以及删除点的方法。这里我使用二分法查找。增加控制点时需要判断控制点在新增端点的左边还是右边。构造函数里初始化点，然后再加两个方法返回端点可控制点</p>
+<p><a href="https://github.com/Yz0012/yzaudiolib/blob/main/include/yzaudiolib/tools/lfo/LFOPointManager.h">LFOPointManager</a></p>
 <h3 id="title-lfocurveview">LFOCurveView</h3>
-<p>LFOCurveView这边需要遍历点。在draw方法里面，外层一层for循环通过读取size()，遍历所有的点。这里很显然控制点始终比端点少一个，所以可以用控制点前面的端点的索引代替控制点的索引</p>
+<p>LFOCurveView这边需要遍历点。在draw方法里面，外层一层for循环通过读取size()，遍历所有的点。这里控制点始终比端点少一个，所以可以用控制点前面的端点的索引代替控制点的索引</p>
 <p>LFOCurveView.cpp</p>
 <pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// ...</span>
 CGraphicsPath<span class="token operator">*</span> path <span class="token operator">=</span> context<span class="token operator">-></span><span class="token function">createGraphicsPath</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
@@ -57,7 +58,9 @@ CGraphicsPath<span class="token operator">*</span> path <span class="token opera
 		<span class="token punctuation">}</span>
 	<span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
-<span class="token comment">//...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><h3 id="title-有关cviewcontainer的东西">有关CViewContainer的东西</h3>
+<span class="token comment">//...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>vstgui的坐标原点在左上角，所以它的坐标轴长这样</p>
+<p><img src="https://i.postimg.cc/jqZXZVvY/ping-mu-jie-tu-2026-11-05-200328.png" alt="ping-mu-jie-tu-2026-11-05-200328.png" loading="lazy"></p>
+<h3 id="title-有关cviewcontainer的东西">有关CViewContainer的东西</h3>
 <p>需要注意到vstgui有一个CViewContainer，要用到它管理子组件。LFO的绘制分成两部分，一部分是点，用LFOPointView对象，需要接收鼠标的信息。一部分是曲线的绘制，用LFOCurveView对象</p>
 <p>LFOPointManager里新增两个方法用于移动点。LFOView中继承CViewContainer，我打算把每一个点单独作为一个对象。显然，点需要知道自己在哪里，所以需要把LFOPointManager作为依赖注入到点中，同时注入索引</p>
 <p>在LFOView声明两个成员，一个是LFOCurveView，一个是LFOPointManager</p>
@@ -89,7 +92,6 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 <span class="token comment">/** called if the view should draw itself */</span>
 <span class="token keyword">virtual</span> <span class="token keyword">void</span> <span class="token function">drawRect</span> <span class="token punctuation">(</span>CDrawContext <span class="token operator">*</span>pContext<span class="token punctuation">,</span> <span class="token keyword">const</span> CRect<span class="token operator">&amp;</span> updateRect<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">draw</span> <span class="token punctuation">(</span>pContext<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre><p>cviewcontainer.cpp</p>
 <p><a class="element-display-open" data-target="drawRect" href="#drawRect">drawRect</a></p>
-<div style="display: none;">
 <div class="element-display" id="drawRect"><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
 <span class="token keyword">void</span> <span class="token class-name">CViewContainer</span><span class="token double-colon punctuation">::</span><span class="token function">drawRect</span> <span class="token punctuation">(</span>CDrawContext<span class="token operator">*</span> pContext<span class="token punctuation">,</span> <span class="token keyword">const</span> CRect<span class="token operator">&amp;</span> updateRect<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -216,11 +218,9 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 
 	<span class="token function">setDirty</span> <span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-</div>
 <p>可以看到cviewcontainer.cpp不会调用自身的draw方法。因此我们并不能复制在CView里的操作：覆写draw方法画东西。不过仍有方法在CViewContainer用子类画东西，利用多态，覆写CViewContainer的drawRect方法，然后在子类覆写的方法里调用父类的方法就可以了</p>
 <h3 id="title-鼠标事件">鼠标事件</h3>
 <p>然后就是addView了，把指针都传进去。lfoPointView要使用带有mouseableArea参数的那个方法，这里需要观察这个方法的实现。在CViewContainer中找到<a class="element-display-open" data-target="addView" href="#addView">实现方法</a>，可以看到指针传入后首先调用了第一个addView方法，第二个参数传入nullptr，然后里面调用了传入CView子类的setMouseEnabled和setMouseableArea方法。再来看看<a class="element-display-open" data-target="setMouseableArea" href="#setMouseableArea">setMouseableArea</a>的实现，这段代码很显然就是检查是否是同一个矩形，相同就去掉这个鼠标事件的区域，使用整个view接收鼠标事件，不同就直接设置区域。改变区域时应该是不用手动去掉旧区域的</p>
-<div style="display: none;">
 <div class="element-display" id="setMouseableArea"><p>cview.cpp</p><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
 <span class="token keyword">void</span> <span class="token class-name">CView</span><span class="token double-colon punctuation">::</span><span class="token function">setMouseableArea</span> <span class="token punctuation">(</span><span class="token keyword">const</span> CRect<span class="token operator">&amp;</span> rect<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -235,9 +235,7 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 		<span class="token function">setAttribute</span> <span class="token punctuation">(</span>kCViewMouseableAreaAttrID<span class="token punctuation">,</span> rect<span class="token punctuation">)</span><span class="token punctuation">;</span>
 	<span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-</div>
 <p>再说一下鼠标事件顺序的问题，第一个addView方法，也就是<code>CView *pView, CView* pBefore</code>这个签名的，<a class="element-display-open" data-target="addView_2" href="#addView_2">打开CViewContainer里的实现</a>，在这里面pBefore接收到的其实是前一个CView的指针，还可以发现里面是使用list管理你传入的CView子类，你可以指定pBefore，它就会找到pBefore的位置并insert到其中，需要知道事件的顺序与addView调用的顺序有关。再提一下如果覆写CViewContainer的onMouseDownEvent事件，这个事件的优先级会在通过addView传入的所有CView子类的上方</p>
-<div style="display: none;">
 <div class="element-display" id="addView_2"><p>cviewcontainer.cpp</p><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">//vst3sdk</span>
 <span class="token keyword">bool</span> <span class="token class-name">CViewContainer</span><span class="token double-colon punctuation">::</span><span class="token function">addView</span> <span class="token punctuation">(</span>CView <span class="token operator">*</span>pView<span class="token punctuation">,</span> CView<span class="token operator">*</span> pBefore<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -270,7 +268,6 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 	<span class="token punctuation">}</span>
 	<span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
-</div>
 <p>LFOPointView继承的是CParamDisplay和CMouseWheelEditingSupport，为什么继承这两个，因为我抄的cxypad。这个类要实现的东西和我现在要实现的东西比较接近，CParamDisplay是CControl的子类，里面的isDirty方法会判断值是否是之前的值，只有当值改变时才会return true。里面有一个setValue的方法，会改变value并且限制在最大值和最小值间，或者直接改value也可以</p>
 <p>ccontrol.cpp</p>
 <pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token comment">// vst3sdk</span>
@@ -399,7 +396,10 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 	<span class="token keyword">if</span> <span class="token punctuation">(</span>cb <span class="token operator">==</span> <span class="token keyword">nullptr</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
 	<span class="token keyword">return</span> <span class="token function">cb</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>addView完成后，现在有一个问题，点的绘制如何刷新？现在的问题是每一个点对象存有自己的pointIndex，addView后需要全部改变吗？实际上可以发现，addView后即使不改变每一个点对象的pointIndex，它们都有对应点的位置。新增的点位置在哪里，我们并不关心，因为刷新时它们都已经有对应的点了，只是多出来最后一个点。所以我需要想想点这个对象在刷新时需要改变那些状态，第一个就是mouseableArea，这个要在刷新的时候重新设置，由于addView后会进行重绘，需要把mouseableArea放draw里面，这就是为什么我要把一个语义毫不相关的mouseableArea放draw里面。然后就似乎没有东西可以改了。对于controlPoint也一样</p>
+<div class="markdown-alert markdown-alert-note">
+<p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
 <p>举例一下：比如说LFOPointManager里面有0，1，2，3这几个点，现在LFOPointView都有对应的实例来绘制它们，索引分别为0，1，2，3。现在新增一个点在1，2之间变成0，1，2，3，4。现在是不是前四个点仍然有对应的实例绘制，所以只需要新增最后面一个实例就足够了</p>
+</div>
 <p>LFOView.cpp</p>
 <div class="element-display" id="addOView"><pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">int</span> <span class="token class-name">LFOView</span><span class="token double-colon punctuation">::</span><span class="token function">addOView</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -413,7 +413,7 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 	<span class="token function">addView</span><span class="token punctuation">(</span>point<span class="token punctuation">,</span> r<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 	<span class="token function">addView</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token function">LFOControlPointView</span><span class="token punctuation">(</span><span class="token function">CRect</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>right<span class="token punctuation">,</span> viewSize_<span class="token punctuation">.</span>bottom<span class="token punctuation">)</span><span class="token punctuation">,</span> lastIndex<span class="token punctuation">,</span> controlPointRadius<span class="token punctuation">,</span> lfoPointManager<span class="token punctuation">)</span><span class="token punctuation">,</span> r<span class="token punctuation">,</span> <span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-	<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></div>
 <p>然后通过setCallback方法把函数给LFOCurvePoint回调
 <code>curveView = new LFOCurveView(viewSize_, lfoPointManager, [this](int pointIndex) {return addOView(pointIndex);});</code></p>
 <h3 id="title-删除点">删除点</h3>
@@ -467,8 +467,38 @@ curveView <span class="token operator">=</span> <span class="token keyword">new<
 pV.ptr 是 0xFFFFFFFFFFFFFFFF。</p>
 </blockquote>
 <p>然后我才想到我根本不需要销毁LFOPointView，因为我只需要在draw()那里加上判断就可以防止LFOPointView用越界的索引去读取vector了，这样既不会重绘也可以清除鼠标区域。这时职责划分的优势就体现出来了，LFOPointView只需要关注自身，虽然我之前没想到</p>
-<p>其实不删除也是不行的，因为上面那个<a class="element-display-open" data-target="addOView" href="#addOView">addOView</a>始终在创建实例，还是需要考虑销毁对象的。比如使用类似于垃圾回收的方式，给每个LFOPointView贴上标签，删除点时回调检查末尾有没有多余的对象，然后删除</p>
-<p>最终代码的呈现可能与这里列举的代码有所不同，因为这是我写代码时写的。我尽可能多的记录有关vst3框架的东西</p>
+<p>其实不删除也是不行的，因为上面那个<a class="element-display-open" data-target="addOView" href="#addOView">addOView</a>始终在创建实例，还是需要考虑销毁对象的。比如使用类似于垃圾回收？给每个LFOPointView贴上标签，删除点时回调检查末尾有没有多余的对象，然后删除</p>
+<p>所以又需要自己管理指针了。在LFOView.h中声明两个对象</p>
+<p>LFOView.h</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>LFOPointView<span class="token operator">*</span><span class="token operator">></span> lfoPoints<span class="token punctuation">;</span>
+std<span class="token double-colon punctuation">::</span>vector<span class="token operator">&lt;</span>LFOControlPointView<span class="token operator">*</span><span class="token operator">></span> lfoControlPointView<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre><p>这个<code>getStatus()</code>里面的status根据对象是否能在LFOPointManager里找到对应的点来决定</p>
+<p>LFOView.cpp</p>
+<pre class="line-numbers language-cpp"><code class="language-cpp"><span class="token keyword">int</span> <span class="token class-name">LFOView</span><span class="token double-colon punctuation">::</span><span class="token function">deleteControlPoint</span><span class="token punctuation">(</span><span class="token keyword">int</span> pointIndex<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>lfoControlPointViews<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>lfoPointViews<span class="token punctuation">.</span><span class="token function">empty</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>lfoControlPointViews<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">getStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">removeView</span><span class="token punctuation">(</span>lfoControlPointViews<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		lfoControlPointViews<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>lfoControlPointViews<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>lfoPointViews<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-></span><span class="token function">getStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">removeView</span><span class="token punctuation">(</span>lfoPointViews<span class="token punctuation">.</span><span class="token function">back</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+		<span class="token punctuation">{</span>
+			<span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span>
+		lfoPointViews<span class="token punctuation">.</span><span class="token function">erase</span><span class="token punctuation">(</span>lfoPointViews<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	lfoPointManager<span class="token punctuation">.</span><span class="token function">deletePoint</span><span class="token punctuation">(</span>pointIndex<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">invalid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p>最终代码的呈现可能与这里列举的代码有所不同，因为这是我一边探索一边写的，感觉好乱。我尽可能多的记录有关vst3框架的东西</p>
 <p><span title="我只是在偷偷讲些c++小知识罢了😋">-</span></p>
 <script>(function () {
   function openDisplay(target) {
@@ -516,5 +546,7 @@ pV.ptr 是 0xFFFFFFFFFFFFFFFF。</p>
   });
 })();</script></article></body>
 <script src="{{ site.baseurl }}/defaultscript.js"></script>
+
+<div style="display: flex; justify-content: flex-end;"><img src="{{ site.baseurl }}/Post/音频/vst3/pictures/nouseable.gif" style="image-rendering: pixelated; width: 32px; height: 32px;"></div>
 
 </html>
