@@ -51,11 +51,15 @@ pre[class*="language-"] {
     -webkit-overflow-scrolling: touch;
 }
 
+p {
+    overflow: auto;
+}
+
 blockquote p {
     font-style: italic;
     border-left: solid greenyellow;
     margin-left: 0;
-    padding-left: 40px;
+    padding-left: 20px;
 }
 
 #articlelink {
