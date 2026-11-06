@@ -17,9 +17,6 @@ const CLIENT_SCRIPT = `<script>(function () {
       var top = Math.max(0, Math.round((window.screen.height - height) / 2));
       features = 'popup=yes,width=' + width + ',height=' + height + ',left=' + left + ',top=' + top;
     }
-    var page = window.open('', '_blank', features);
-    if (!page) return;
-    var doc = page.document;
     var viewport = document.querySelector('meta[name="viewport"]');
     var head = '<meta charset="UTF-8">';
     head += viewport ? viewport.outerHTML : '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
@@ -33,14 +30,17 @@ const CLIENT_SCRIPT = `<script>(function () {
         head += node.outerHTML;
       }
     });
-    doc.open();
-    doc.write('<!DOCTYPE html><html><head>' + head + '</head><body></body></html>');
-    doc.close();
-    doc.title = document.title;
-    doc.body.className = document.body.className;
-    var article = doc.createElement('article');
-    article.appendChild(target.cloneNode(true));
-    doc.body.appendChild(article);
+    head += '<title>' + document.title + '</title>';
+    var html = '<!DOCTYPE html><html lang="' + document.documentElement.lang + '"><head>' + head
+      + '</head><body class="' + document.body.className + '"><article>' + target.outerHTML
+      + '</article></body></html>';
+    var url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    var page = window.open(url, '_blank', features);
+    if (!page) {
+      URL.revokeObjectURL(url);
+      return;
+    }
+    setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
   }
   document.addEventListener('click', function (event) {
     var trigger = event.target.closest('.element-display-open');
