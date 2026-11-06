@@ -46,7 +46,7 @@ const TEMPLATE = `---
 </article></body>
 <script src="{{ site.baseurl }}/defaultscript.js"></script>
 
-<div><img src="{{ site.baseurl }}/音频/vst3/pictures/nouseable.gif" style="image-rendering: pixelated; justify-self: end; width: 32px; height: 32px;"></div>
+<div style="display: flex; justify-content: flex-end;"><img src="{{ site.baseurl }}/Post/音频/vst3/pictures/nouseable.gif" style="image-rendering: pixelated; width: 32px; height: 32px;"></div>
 
 </html>`;
 
