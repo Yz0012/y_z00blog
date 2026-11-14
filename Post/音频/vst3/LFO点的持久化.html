@@ -278,6 +278,8 @@ CView<span class="token operator">*</span> <span class="token class-name">UIView
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre><p><code>createView</code>的方法签名本来是<code>createView(const CRect&amp; size, Steinberg::Vst::EditController&amp; editController, LFOPointManager&lt;float&gt;&amp; pointManager)</code>这样的，但是verifyView阶段无论是调用<code>lfoViewContainer-&gt;getViewSize()</code>还是直接在<code>createView</code>里面调用<code>getViewSize()</code>都会崩溃，可能verifyView阶段View并没有创建完成。所以这里CRect改成了两个参数width和height，在createView里面直接构造一个CRect</p>
 <p>最后一步是初始化时在controller发送点到音频线程中，虽然LFOView初始化会<code>sentMessage()</code>，但是ui没打开的时候音频线程是没有接收到点的，所以controller还要再发一次</p>
 <p><code>sendMessage()</code>的代码就不贴出来了，我在<code>setState</code>这个方法里调用</p>
+<p>好了现在我知道为什么之前我LFOViewCreator用<code>static</code>声明在<code>initialize</code>方法里了，我测试发现关闭第一个插件时，第二个再次打开就什么都不显示了，原因是用智能指针声明之后在<code>terminate()</code>这里调用<code>reset()</code>，全局唯一的creator没了（vstgui的雷霆大单例，论为什么单例是一种反模式😕）</p>
+<p>不过没事，现在重新那样做是安全的，直接改成之前的用法就行</p>
 <p>到这步，所有工作算是完成了</p>
 </article></body>
 <script src="{{ site.baseurl }}/defaultscript.js"></script>
