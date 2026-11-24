@@ -1,28 +1,3 @@
-// const TEMPLATE = `---
-// ---
-
-// <!DOCTYPE html>
-// <html lang="zh">
-
-// <head>
-//     <meta charset="UTF-8">
-//     <link rel="icon" href="{{ site.baseurl }}/MainImage/profile.jpg">
-//     <link rel="stylesheet" href="{{ site.baseurl }}/defaulttheme.css">
-//     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-funky.min.css">
-//     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
-//     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
-//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//     <title></title>
-// </head>
-
-// <body>
-// <a href="" id="belonging"></a>
-// <article>
-// </article></body>
-// <script src="{{ site.baseurl }}/defaultscript.js"></script>
-
-// </html>`;
-
 const TEMPLATE = `---
 ---
 
@@ -46,9 +21,34 @@ const TEMPLATE = `---
 </article></body>
 <script src="{{ site.baseurl }}/defaultscript.js"></script>
 
-<div style="display: flex; justify-content: flex-end;"><img src="{{ site.baseurl }}/Post/音频/vst3/pictures/nouseable.gif" style="image-rendering: pixelated; width: 64px; height: 64px;"></div>
-
 </html>`;
+
+// const TEMPLATE = `---
+// ---
+
+// <!DOCTYPE html>
+// <html lang="zh">
+
+// <head>
+//     <meta charset="UTF-8">
+//     <link rel="icon" href="{{ site.baseurl }}/MainImage/profile.jpg">
+//     <link rel="stylesheet" href="{{ site.baseurl }}/defaulttheme.css">
+//     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-funky.min.css">
+//     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.css">
+//     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.18.5/dist/katex.min.css" integrity="sha384-2dNi/m6JtSiviznrOIZ5fTiZ5As0In2QwkuXSgoqcQtCNplvJAbt+jveeN+8en73" crossorigin="anonymous">
+//     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//     <title></title>
+// </head>
+
+// <body>
+// <a href="" id="belonging"></a>
+// <article>
+// </article></body>
+// <script src="{{ site.baseurl }}/defaultscript.js"></script>
+
+// <div style="display: flex; justify-content: flex-end;"><img src="{{ site.baseurl }}/Post/音频/vst3/pictures/nouseable.gif" style="image-rendering: pixelated; width: 64px; height: 64px;"></div>
+
+// </html>`;
 
 export function buildPage({ body, title, belongingHref, belongingText, frontMatter = '' }) {
   let html = frontMatter ? TEMPLATE.replace('---\n---', frontMatter) : TEMPLATE;
