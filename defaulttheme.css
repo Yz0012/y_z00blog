@@ -94,7 +94,7 @@ a:active {
 
 article {
     img {
-        max-width: 100%;
+        width: stretch;;
     }
 }
 
